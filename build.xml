@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="Carbide_Account_Manager" default="default" basedir=".">
+    <description>Builds, tests, and runs the project Carbide_Account_Manager.</description>
+    <import file="nbproject/build-impl.xml"/>
+<!--    
+    <property name="jarname" value="Carbide_Account_Manager"/>
+    
+    <target name="-post-jar">
+      <jar jarfile="dist/Carbide_Account_Manager.jar">
+        <zipfileset src="${dist.jar}" excludes="META-INF/*" />
+            <zipgroupfileset dir="lib" excludes="META-INF/*" />
+
+        <manifest>
+            <attribute name="Main-Class" value="carbide_account_manager.Carbide_Account_Manager."/>
+        </manifest>
+      </jar>
+    </target>-->
+    
+    
+    <target name="package-for-store" depends="jar">
+        <property name="store.jar.name" value="Carbide_Account_Manager"/>
+        <property name="store.dir" value="dist"/>
+        <property name="store.jar" value="${store.dir}/${store.jar.name}.jar"/>
+        <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
+        <delete dir="${store.dir}"/>
+        <mkdir dir="${store.dir}"/>
+        <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
+            <zipgroupfileset dir="dist" includes="*.jar"/>
+<!--            <zipgroupfileset dir="lib" includes="*.jar"/>-->
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+        </jar>
+        <zip destfile="${store.jar}">
+            <zipfileset src="${store.dir}/temp_final.jar"
+            excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
+        </zip>
+        <delete file="${store.dir}/temp_final.jar"/>
+    </target>
+
+</project>
