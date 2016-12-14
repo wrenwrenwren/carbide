@@ -53,6 +53,7 @@ public class account_manager_frame extends javax.swing.JFrame {
             new File(carbide_dir).mkdir();
         }
         
+        System.out.println(System.getProperty("os.name"));
         
     }
 
