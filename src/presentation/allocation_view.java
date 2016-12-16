@@ -22,7 +22,10 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -43,40 +46,80 @@ public class allocation_view extends javax.swing.JFrame {
             String homedirec = System.getProperty("user.home");
             String account_weights_direc = homedirec + "/carbide/accounts/account_weights.csv";
             
-            String account_name_direc = homedirec + "/carbide/accounts";
-            ArrayList<String> account_names = new ArrayList<String>();
+            String account_name_direc = homedirec + "/carbide/accounts/accounts.csv";
             
-            for (String line : Files.readAllLines(Paths.get(account_name_direc + "/accounts.txt"))) {
-                account_names.add(line);
+            
+//            ArrayList<String> account_names = new ArrayList<String>();
+            
+            BufferedReader br_acc = null;
+
+            Object[][] data_acc = new Object[0][0];
+            String line = "";
+            String splitSign = ",";
+
+            int p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc));
+
+            while (br_acc.readLine() != null) {
+                p++;
+            }
+            br_acc.close();
+            data_acc = new Object[p - 1][];
+            p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc));
+            line = br_acc.readLine();
+
+            line = br_acc.readLine();
+            while (line != null) {
+                data_acc[p] = new Object[line.split(splitSign).length];
+                for (int j = 0; j < data_acc[p].length; j++) {
+                    data_acc[p][j] = line.split(splitSign)[j];
+                }
+                p++;
+                line = br_acc.readLine();
             }
             
-            String[] accountarr = new String[account_names.size()];
-            accountarr = account_names.toArray(accountarr);
+            
+//            for (String line : Files.readAllLines(Paths.get(account_name_direc + "/accounts.csv"))) {
+//                account_names.add(line);
+//            }
+//            
+            
+//            String[] accountarr = new String[data_acc.length];
+//            accountarr = account_names.toArray(accountarr);
             
             File account_weights_file = new File(account_weights_direc);
             long file_length = account_weights_file.length();
+
             if (!account_weights_file.exists() || file_length < 1) {
                 
-                Object[][] account_weights_data = new Object[accountarr.length][3];
+                Object[][] account_weights_data = new Object[data_acc.length][3];
                 
-                for (int n = 0 ; n < accountarr.length; n++){
-                    account_weights_data[n][0] = accountarr[n];
+                for (int n = 0 ; n < data_acc.length; n++){
+                    account_weights_data[n][0] = data_acc[n][0];
+                    account_weights_data[n][1] = data_acc[n][1];
                     account_weights_data[n][1] = "";
                     account_weights_data[n][2] = "";
                 }
-                String[] column_names = new String[3];
-                column_names[0] = "Accounts";
-                column_names[1] = "Nominal Value";
-                column_names[2] = "Weights";
+                
+                
+                String[] column_names = new String[4];
+                column_names[0] = "FCM";
+                column_names[1] = "Account Name";
+                column_names[2] = "Nominal Value";
+                column_names[3] = "Weights";
                 
                 jTable1.setModel(new javax.swing.table.DefaultTableModel(account_weights_data, column_names));
+                DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+                RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+                jTable1.setRowSorter(sorter); 
             } else {
                 BufferedReader br = null;
 
                 String[] columnNames = new String[0];
                 Object[][] data = new Object[0][0];
-                String line = "";
-                String splitSign = ",";
+//                String line = "";
+//                String splitSign = ",";
 
                 int i = 0;
                 br = new BufferedReader(new FileReader(account_weights_direc));
@@ -102,45 +145,56 @@ public class allocation_view extends javax.swing.JFrame {
                      line = br.readLine();
                 }
                 
-                if (accountarr.length > data.length){
+                if (data_acc.length > data.length){
                 
-                    Object[][] new_account_weights_data = new Object[accountarr.length][3];
+                    Object[][] new_account_weights_data = new Object[data_acc.length][4];
                 
-                    for (int n = 0 ; n < accountarr.length; n++){
-                        new_account_weights_data[n][0] = accountarr[n];
+                    for (int n = 0 ; n < data_acc.length; n++){
+                        new_account_weights_data[n][0] = data_acc[n][0];
+                        new_account_weights_data[n][1] = data_acc[n][1];
                         inner: for (int m = 0 ; m < data.length; m++){
-                            if (data[m][0].equals(new_account_weights_data[n][0])) {
-                                new_account_weights_data[n][1] = data[m][1];
+                            if (data[m][0].equals(new_account_weights_data[n][0]) && data[m][1].equals(new_account_weights_data[n][1])) {
                                 new_account_weights_data[n][2] = data[m][2];
+                                new_account_weights_data[n][3] = data[m][3];
                                 break inner;
                             } else {
-                                new_account_weights_data[n][1] = "";
                                 new_account_weights_data[n][2] = "";
+                                new_account_weights_data[n][3] = "";
                             }   
                         }
                     }
                                 
                     jTable1.setModel(new javax.swing.table.DefaultTableModel(new_account_weights_data, columnNames));
+                    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+                    RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+                    jTable1.setRowSorter(sorter); 
 
-                } else if (accountarr.length < data.length){
-                    Object[][] new_account_weights_data2 = new Object[accountarr.length][3];
+                } else if (data_acc.length < data.length){
+                    Object[][] new_account_weights_data2 = new Object[data_acc.length][4];
                 
-                    for (int n = 0 ; n < accountarr.length; n++){
-                        new_account_weights_data2[n][0] = accountarr[n];
+                    for (int n = 0 ; n < data_acc.length; n++){
+                        new_account_weights_data2[n][0] = data_acc[n][0];
+                        new_account_weights_data2[n][1] = data_acc[n][1];
                         inner: for (int m = 0 ; m < data.length; m++){
-                            if (data[m][0].equals(new_account_weights_data2[n][0])) {
-                                new_account_weights_data2[n][1] = data[m][1];
+                            if (data[m][0].equals(new_account_weights_data2[n][0]) && data[m][1].equals(new_account_weights_data2[n][1])) {
                                 new_account_weights_data2[n][2] = data[m][2];
+                                new_account_weights_data2[n][3] = data[m][3];
                                 break inner;
                             }  
                         }
                     }
                     
                     jTable1.setModel(new javax.swing.table.DefaultTableModel(new_account_weights_data2, columnNames));
+                    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+                    RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+                    jTable1.setRowSorter(sorter); 
                     jButton2.doClick();
                     jButton1.doClick();
                 } else {
                     jTable1.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
+                    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+                    RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+                    jTable1.setRowSorter(sorter); 
                     jButton2.doClick();
                 }
 
@@ -182,6 +236,8 @@ public class allocation_view extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.setCellSelectionEnabled(true);
+        jTable1.setGridColor(new java.awt.Color(153, 153, 153));
         jScrollPane1.setViewportView(jTable1);
 
         jButton1.setText("Save To File");
@@ -205,23 +261,21 @@ public class allocation_view extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
                 .addComponent(jButton1)
-                .addGap(24, 24, 24))
+                .addGap(30, 30, 30))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -232,11 +286,11 @@ public class allocation_view extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -245,13 +299,14 @@ public class allocation_view extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         Object[][] table_data = getTableData(jTable1);
         JFrame error_frame = new JFrame();
-        Object[][] table_weights = new Object[table_data.length][3];
+        Object[][] table_weights = new Object[table_data.length][4];
         float sum = 0;
         boolean close = false;
+        
         outerloop:
         for(int row =0 ; row < table_data.length; ++row){
             for(int column =0; column<table_data[row].length - 1;++column){
-                if (table_data[row][1] == "") {
+                if (table_data[row][2] == "") {
                     JOptionPane.showMessageDialog(error_frame, "Please nominal values for calculation. It can't be NULL.", "Error in Calculation!",JOptionPane.ERROR_MESSAGE);
                     close = true;
                     break outerloop;
@@ -266,8 +321,8 @@ public class allocation_view extends javax.swing.JFrame {
         }
         
         for(int row =0 ; row < table_weights.length; ++row){
-            if (table_data[row][1] != ""){
-                sum = sum + Float.valueOf((String) table_data[row][1]);
+            if (table_data[row][2] != ""){
+                sum = sum + Float.valueOf((String) table_data[row][2]);
             } else {
                 sum = 0;
             }
@@ -275,18 +330,23 @@ public class allocation_view extends javax.swing.JFrame {
         
         if (sum != 0) {
             for(int row =0 ; row < table_weights.length; ++row){
-                float weights = Float.valueOf((String) table_weights[row][1]) / sum;
-                table_weights[row][2] = String.valueOf(weights);
+                float weights = Float.valueOf((String) table_weights[row][2]) / sum;
+                table_weights[row][3] = String.valueOf(weights);
             }
         }
         
-        String[] columnNames = new String[3];
-        columnNames[0] = "Accounts";
-        columnNames[1] = "Nominal Value";
-        columnNames[2] = "Weights";
+        String[] columnNames = new String[4];
+        columnNames[0] = "FCM";
+        columnNames[1] = "Account Name";
+        columnNames[2] = "Nominal Value";
+        columnNames[3] = "Weights";
+                
         
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(table_weights, columnNames));
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+        jTable1.setRowSorter(sorter); 
         jTextField1.setText(String.valueOf(sum));
         
     }//GEN-LAST:event_jButton2ActionPerformed

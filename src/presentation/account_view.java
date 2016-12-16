@@ -5,6 +5,8 @@
  */
 package presentation;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,7 +15,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.RowSorter;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -33,27 +39,62 @@ public class account_view extends javax.swing.JFrame {
         
         try {
             String homedirec = System.getProperty("user.home");
-            String account_name_direc = homedirec + "/carbide/accounts";
-            ArrayList<String> account_names = new ArrayList<String>();
+            String account_name_direc = homedirec + "/carbide/accounts/accounts.csv";
             
-            for (String line : Files.readAllLines(Paths.get(account_name_direc + "/accounts.txt"))) {
-                account_names.add(line);
-            }
-                        
-            String[] columnNames = new String[1];
-            columnNames[0] = "Accounts";
-                        
-            Object[][] accounts = new Object[account_names.size()][];
+            BufferedReader br = null;
+
+            String[] columnNames = new String[0];
+            Object[][] data = new Object[0][0];
+            String line = "";
+            String splitSign = ",";
+
             int i = 0;
-            for (String c : account_names)
-            {
-                accounts[i] = new Object[1];
-                accounts[i][0] = c;
+            br = new BufferedReader(new FileReader(account_name_direc));
+
+            while (br.readLine() != null) {
                 i++;
             }
-            
-            jTable1.setModel(new javax.swing.table.DefaultTableModel(accounts, columnNames));
+            br.close();
+            data = new Object[i - 1][];
+            i = 0;
+            br = new BufferedReader(new FileReader(account_name_direc));
+            line = br.readLine();
+            columnNames = line.split(splitSign);
 
+            line = br.readLine();
+            while (line != null) {
+                data[i] = new Object[line.split(splitSign).length];
+                
+                for (int j = 0; j < data[i].length; j++) {
+                    data[i][j] = line.split(splitSign)[j];
+                }
+                
+                i++;
+                line = br.readLine();
+            }
+            
+            
+            
+//            for (String line : Files.readAllLines(Paths.get(account_name_direc + "/accounts.txt"))) {
+//                account_names.add(line);
+//            }
+//                        
+//            String[] columnNames = new String[1];
+//            columnNames[1] = "Account Name";
+//                        
+//            Object[][] accounts = new Object[account_names.size()][];
+//            int i = 0;
+//            for (String c : account_names)
+//            {
+//                accounts[i] = new Object[1];
+//                accounts[i][0] = c;
+//                i++;
+//            }
+            
+            jTable1.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+            jTable1.setRowSorter(sorter);            
         } catch (IOException ex) {
             Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -88,6 +129,8 @@ public class account_view extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.setCellSelectionEnabled(true);
+        jTable1.setGridColor(new java.awt.Color(153, 153, 153));
         jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

@@ -371,78 +371,158 @@ public class account_manager_frame extends javax.swing.JFrame {
         
         String homedirec = System.getProperty("user.home");
         String dataentry_path = homedirec + "/carbide/Combined_Data_Entry";
+        String primary_dataentry_path = homedirec + "/carbide/Data_Entry";
         
+        File folder = new File(primary_dataentry_path);
+        File[] listOfFiles = folder.listFiles();
+        System.out.println(listOfFiles.length);
+        
+        if (listOfFiles.length == 0){
+            JFrame error_frame = new JFrame();
+            JOptionPane.showMessageDialog(error_frame, "No Data Entry files!", "Error!",JOptionPane.ERROR_MESSAGE);
+        } else {
             
-        if (new File(dataentry_path).exists()) {
+            if (new File(dataentry_path).exists()) {
+                try {
+                    merge_csv(dataentry_path);
+                } catch (IOException ex) {
+                    Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                } else {
+                    try {
+                        new File(dataentry_path).mkdir();
+                        merge_csv(dataentry_path);
+                    } catch (IOException ex) {
+                        Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            }
+
+
+
+
             try {
-                merge_csv(dataentry_path);
+                String execute_python_command = "python " + homedirec + "/carbide/aggregation.py";
+                System.out.println(execute_python_command);
+                Process p = Runtime.getRuntime().exec(execute_python_command);
             } catch (IOException ex) {
                 Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            } else {
-            try {
-                new File(dataentry_path).mkdir();
-                merge_csv(dataentry_path);
-            } catch (IOException ex) {
-                Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
         }
-            
-
-                
-        try {
-            String execute_python_command = "python " + homedirec + "/carbide/aggregation.py";
-            System.out.println(execute_python_command);
-            Process p = Runtime.getRuntime().exec(execute_python_command);
-        } catch (IOException ex) {
-            Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         try {
             JFrame frame = new JFrame("Adding a new account");
-            String name = JOptionPane.showInputDialog(frame, "New Account:");
+            String name = JOptionPane.showInputDialog(frame, "New Account(Format: FCM,Account Name):");
+
+            
             String homedirec = System.getProperty("user.home");
-            String account_name_direc = homedirec + "/carbide/accounts/accounts.txt";
+            String account_name_direc = homedirec + "/carbide/accounts/accounts.csv";
             JFrame error_frame = new JFrame();
             
-            if ("".equals(name)) {
+            if (name != null && ("".equals(name))) {
                 JOptionPane.showMessageDialog(error_frame, "Please input an account name. It can't be NULL.", "Error in Account Name!",JOptionPane.ERROR_MESSAGE);
+            } else if (name == null) {
+                JOptionPane.getRootFrame().dispose();   
             } else {
-                ArrayList<String> current_accounts = new ArrayList<String>();
-                for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
-                    current_accounts.add(line);
+//                ArrayList<String> current_accounts = new ArrayList<String>();
+//                for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
+//                    current_accounts.add(line);
+//                }
+                            
+            
+    //            ArrayList<String> account_names = new ArrayList<String>();
+                String[] fcm_account = name.split(",");
+                String fcm_name = fcm_account[0];
+                String account_name = fcm_account[1];
+                BufferedReader br_acc = null;
+
+                Object[][] data_acc = new Object[0][0];
+                String line = "";
+                String splitSign = ",";
+
+                int p = 0;
+                br_acc = new BufferedReader(new FileReader(account_name_direc));
+
+                while (br_acc.readLine() != null) {
+                    p++;
+                }
+                br_acc.close();
+                data_acc = new Object[p - 1][];
+                p = 0;
+                br_acc = new BufferedReader(new FileReader(account_name_direc));
+                line = br_acc.readLine();
+
+                line = br_acc.readLine();
+                while (line != null) {
+                    data_acc[p] = new Object[line.split(splitSign).length];
+                    for (int j = 0; j < data_acc[p].length; j++) {
+                        data_acc[p][j] = line.split(splitSign)[j];
+                    }
+                    p++;
+                    line = br_acc.readLine();
                 }
                 
-                if (!current_accounts.contains(name)){
-                    current_accounts.add(name);
+                
+                boolean existed = false;
+                for (int m = 0; m < data_acc.length; m++){
+                        if (data_acc[m][0].equals(fcm_name) && data_acc[m][1].equals(account_name)){
+                            existed = true;
+                        }
+                    
+                }
+                
+                if (existed == false){
+                    Object[][] new_data_acc = new Object[data_acc.length + 1][2];
+                    
+                    for (int m = 0; m < data_acc.length; m++){
+                        for (int n = 0; n < data_acc[m].length; n++){
+                            new_data_acc[m][n] = data_acc[m][n];
+                        }
+                    }
+                    new_data_acc[data_acc.length][0] = fcm_name;
+                    new_data_acc[data_acc.length][1] = account_name;
 
                     File f = new File(account_name_direc);
                     f.delete();
 
                     FileWriter writer = new FileWriter(account_name_direc);
-
-                    for(String str: current_accounts) {
-                        int j = 1;
-
-                        if (j !=  current_accounts.size()){
-                            writer.write(str + System.lineSeparator());
-                        } else {
-                            writer.write(str);
+                    writer.write("FCM,Account Names" + System.lineSeparator());
+                    
+                    for (int m = 0; m < new_data_acc.length; m++){
+                        for (int n = 0; n < new_data_acc[m].length; n++){
+                            String to_write = null;
+                            if ( n == new_data_acc[m].length - 1){
+                                to_write = (String) new_data_acc[m][n];
+                                writer.write(to_write);
+                            } else {
+                                to_write = (String) new_data_acc[m][n];
+                                writer.write(to_write + ",");
+                            }
+                        }
+                        
+                        if ( m != new_data_acc.length){
+                                writer.write(System.lineSeparator());
                         }
                     }
+                    
+                    
+//                    for(String str: current_accounts) {
+//                        int j = 1;
+//
+//                        if (j !=  current_accounts.size()){
+//                            writer.write(str + System.lineSeparator());
+//                        } else {
+//                            writer.write(str);
+//                        }
+//                    }
 
                     writer.close();
                 } else {
                     JOptionPane.showMessageDialog(error_frame, "Account name existed!", "Error in Account Name!",JOptionPane.ERROR_MESSAGE);
                 }
-
-
             }
 
         } catch (IOException ex) {
@@ -456,46 +536,145 @@ public class account_manager_frame extends javax.swing.JFrame {
         try {           
             
             String homedirec = System.getProperty("user.home");
-            String account_name_direc = homedirec + "/carbide/accounts/accounts.txt";
+            String account_name_direc = homedirec + "/carbide/accounts/accounts.csv";
+            
+            JFrame error_frame = new JFrame();
+
+            BufferedReader br_acc = null;
+
+            Object[][] data_acc = new Object[0][0];
+            String line = "";
+            String splitSign = ",";
+
+            int p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc));
+
+            while (br_acc.readLine() != null) {
+                p++;
+            }
+            br_acc.close();
+            data_acc = new Object[p - 1][];
+            p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc));
+            line = br_acc.readLine();
+
+            line = br_acc.readLine();
+            while (line != null) {
+                data_acc[p] = new Object[line.split(splitSign).length];
+                 for (int j = 0; j < data_acc[p].length; j++) {
+                    data_acc[p][j] = line.split(splitSign)[j];
+                }
+                p++;
+                line = br_acc.readLine();
+            }
             
             ArrayList<String> current_accounts = new ArrayList<String>();
-            
-            for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
-                current_accounts.add(line);
-
+            for (int m = 0; m < data_acc.length; m++){
+                String account_info = (String) data_acc[m][0];
+                account_info = account_info + "," + (String) data_acc[m][1];
+                current_accounts.add(account_info);
             }
             Object[] current_account = current_accounts.toArray(new Object[current_accounts.size()]);
-
+            
             String nametodelete = (String) JOptionPane.showInputDialog(null, "Account to Delete:", "Delete an account", JOptionPane.QUESTION_MESSAGE, null, current_account, current_account[0]); 
+            
 
-            ArrayList<String> account_names = new ArrayList<String>();
-                            
-            if (nametodelete != null){
-                
-                
-                for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
-                    if (!line.contains(nametodelete)){
-                        account_names.add(line);
-                    }
-                }
             
-                File f = new File(account_name_direc);
-                f.delete();
-            
-                FileWriter writer = new FileWriter(account_name_direc);
-                
-                for(String str: account_names) {
-                    int j = 1;
-                    if (j !=  account_names.size()){
-                        writer.write(str + System.lineSeparator());
-                    } else {
-                        writer.write(str);
-                    }
+//            ArrayList<String> current_accounts = new ArrayList<String>();
+//            
+//            for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
+//                current_accounts.add(line);
+//
+//            }
+//            Object[] current_account = current_accounts.toArray(new Object[current_accounts.size()]);
+//
+//            String nametodelete = (String) JOptionPane.showInputDialog(null, "Account to Delete:", "Delete an account", JOptionPane.QUESTION_MESSAGE, null, current_account, current_account[0]); 
+//
+//            ArrayList<String> account_names = new ArrayList<String>();
+            if (nametodelete != null && ("".equals(nametodelete))) {
+                JOptionPane.showMessageDialog(error_frame, "Please input an account name. It can't be NULL.", "Error in Account Name!",JOptionPane.ERROR_MESSAGE);
+            } else if (nametodelete == null) {
+                JOptionPane.getRootFrame().dispose();   
+            } else {       
+                String[] fcm_account = nametodelete.split(",");
+                String fcm_name = fcm_account[0];
+                String account_name = fcm_account[1];
+                int existed = 0;
+                for (int m = 0; m < data_acc.length; m++){
+                        if (data_acc[m][0].equals(fcm_name) && data_acc[m][1].equals(account_name)){
+                            existed = m;
+                        }
+                    
                 }
+                if (existed != 0){
+                    Object[][] new_data_acc = new Object[data_acc.length - 1][2];
+                    int new_m = 0;
+                    loops:for (int m = 0; m < data_acc.length; m++){
+
+                        if (m == existed && existed != data_acc.length - 1){
+                            m++;
+                        } 
+
+                        
+                        for (int n = 0; n < data_acc[m].length; n++){
+                            new_data_acc[new_m][n] = data_acc[m][n];
+                        }
+                        
+                        new_m ++;
+                        
+                        if(new_m == data_acc.length - 1){
+                            break loops;
+                        }
+                    }
+                
+                    File f = new File(account_name_direc);
+                    f.delete();
+
+                    FileWriter writer = new FileWriter(account_name_direc);
+                    writer.write("FCM,Account Names" + System.lineSeparator());
+                    
+                    for (int m = 0; m < new_data_acc.length; m++){
+                        for (int n = 0; n < new_data_acc[m].length; n++){
+                            String to_write = null;
+                            if ( n == new_data_acc[m].length - 1){
+                                to_write = (String) new_data_acc[m][n];
+                                writer.write(to_write);
+                            } else {
+                                to_write = (String) new_data_acc[m][n];
+                                writer.write(to_write + ",");
+                            }
+                        }
+                        
+                        if ( m != new_data_acc.length){
+                                writer.write(System.lineSeparator());
+                        }
+                    }
+                
+                
+//                for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
+//                    if (!line.contains(nametodelete)){
+//                        account_names.add(line);
+//                    }
+//                }
+            
+//                File f = new File(account_name_direc);
+//                f.delete();
+//            
+//                FileWriter writer = new FileWriter(account_name_direc);
+//                
+//                for(String str: account_names) {
+//                    int j = 1;
+//                    if (j !=  account_names.size()){
+//                        writer.write(str + System.lineSeparator());
+//                    } else {
+//                        writer.write(str);
+//                    }
+//                }
                 writer.close();
+            
+
+                }
             }
-
-
         } catch (IOException ex) {
             Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
         }

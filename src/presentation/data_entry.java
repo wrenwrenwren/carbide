@@ -177,9 +177,7 @@ public class data_entry extends javax.swing.JFrame {
                         .addGap(3, 3, 3)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTextField6)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jLabel5)
@@ -190,9 +188,9 @@ public class data_entry extends javax.swing.JFrame {
                     .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jTextField7)
+                    .addComponent(jComboBox2, 0, 95, Short.MAX_VALUE))
                 .addGap(52, 52, 52))
         );
         layout.setVerticalGroup(
@@ -212,14 +210,14 @@ public class data_entry extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(jLabel6)
                     .addComponent(jLabel9)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
                     .addComponent(jLabel7)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(43, 43, 43)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
@@ -228,7 +226,7 @@ public class data_entry extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         pack();
@@ -276,10 +274,10 @@ public class data_entry extends javax.swing.JFrame {
         String expiry = jTextField7.getText().replaceAll(" ","");
         String comments = jTextArea1.getText();
         String account = String.valueOf(jComboBox2.getSelectedItem());
-        
+        System.out.println(account);
         boolean empty = symbol.isEmpty() || expiry.isEmpty() || account.isEmpty();
-        System.out.println(empty);
-        if (empty){
+
+        if (empty == true){
             JFrame error_frame = new JFrame();
             JOptionPane.showMessageDialog(error_frame, "Please check your input! No blanks!", "Error in Data Entry!",JOptionPane.ERROR_MESSAGE);
 
@@ -338,13 +336,13 @@ public class data_entry extends javax.swing.JFrame {
 
                         new_entry.Date = date;
                         new_entry.Symbol = symbol;
-                        new_entry.Amount = Math.round(amount * Float.valueOf((String) data[j][2]));
+                        new_entry.Amount = Math.round(amount * Float.valueOf((String) data[j][3]));
                         new_entry.Strike = strike;
                         new_entry.Price = price;
                         new_entry.Type = type;
                         new_entry.Expiry = expiry;
                         new_entry.Comments = comments;
-                        new_entry.Account = (String) data[j][0];
+                        new_entry.Account = (String) data[j][0] + "-" + (String) data[j][1];
 
                         total_data_entry_table.add(new_entry);
                     }
@@ -556,15 +554,45 @@ public class data_entry extends javax.swing.JFrame {
         
         try {
             String homedirec = System.getProperty("user.home");
-            String account_name_direc = homedirec + "/carbide/accounts";
-            ArrayList<String> account_names = new ArrayList<String>();
+            String account_name_direc = homedirec + "/carbide/accounts/accounts.csv";
             
-            account_names.add("ALL");
-            
-            for (String line : Files.readAllLines(Paths.get(account_name_direc + "/accounts.txt"))) {
-                account_names.add(line);
+            BufferedReader br_acc = null;
+
+            Object[][] data_acc = new Object[0][0];
+            String line = "";
+            String splitSign = ",";
+
+            int p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc));
+
+            while (br_acc.readLine() != null) {
+                p++;
+            }
+            br_acc.close();
+            data_acc = new Object[p - 1][];
+            p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc));
+            line = br_acc.readLine();
+
+            line = br_acc.readLine();
+            while (line != null) {
+                data_acc[p] = new Object[line.split(splitSign).length];
+                 for (int j = 0; j < data_acc[p].length; j++) {
+                    data_acc[p][j] = line.split(splitSign)[j];
+                }
+                p++;
+                line = br_acc.readLine();
             }
             
+            ArrayList<String> account_names = new ArrayList<String>();
+            account_names.add("ALL");            
+            
+            for (int m = 0; m < data_acc.length; m++){
+                String account_info = (String) data_acc[m][0];
+                account_info = account_info + "-" + (String) data_acc[m][1];
+                account_names.add(account_info);
+            }
+ 
             String[] accountarr = new String[account_names.size()];
             accountarr = account_names.toArray(accountarr);
             jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(accountarr));
