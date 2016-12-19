@@ -93,7 +93,7 @@ public class report_view extends javax.swing.JFrame {
         
         try {
             String homedirec = System.getProperty("user.home");
-            String account_name_direc = homedirec + "/carbide/accounts/accounts.csv";
+            String account_name_direc = homedirec + "/carbide/accounts/accounts_hedge.csv";
             
             BufferedReader br_acc = null;
 
