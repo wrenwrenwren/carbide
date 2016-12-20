@@ -157,16 +157,28 @@ public class report_view extends javax.swing.JFrame {
             ArrayList<String> account_names = new ArrayList<String>();
             account_names.add("ALL");            
             
-            for (int m = 0; m < data_acc.length; m++){
-                String account_info = (String) data_acc[m][0];
-                account_info = account_info + "-" + (String) data_acc[m][1];
-                account_names.add(account_info);
-            }
-            
             for (int m = 0; m < data_acc2.length; m++){
                 String account_info = (String) data_acc2[m][0];
                 account_info = account_info + "-" + (String) data_acc2[m][1];
                 account_names.add(account_info);
+            }
+
+            for (int m = 0; m < data_acc.length; m++){
+                String account_info_toadd = (String) data_acc[m][0];
+                account_info_toadd = account_info_toadd + "-" + (String) data_acc[m][1];
+                Boolean existed = false;
+                
+                for (int n = 0; n < data_acc2.length; n++){
+                    String account_info_existed = (String) data_acc2[n][0];
+                    account_info_existed = account_info_existed + "-" + (String) data_acc2[n][1];
+                    if (account_info_toadd == account_info_existed) {
+                       existed = true; 
+                    }
+                }
+                
+                if (!existed){
+                    account_names.add(account_info_toadd);
+                }
             }
             
             String[] accountarr = new String[account_names.size()];
