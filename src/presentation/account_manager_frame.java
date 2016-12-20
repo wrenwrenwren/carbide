@@ -411,7 +411,6 @@ public class account_manager_frame extends javax.swing.JFrame {
         
         File folder = new File(primary_dataentry_path);
         File[] listOfFiles = folder.listFiles();
-        System.out.println(listOfFiles.length);
         
         if (listOfFiles.length == 0){
             JFrame error_frame = new JFrame();
@@ -434,16 +433,29 @@ public class account_manager_frame extends javax.swing.JFrame {
                     }
             }
 
-
+            int terminate = 10;
 
 
             try {
                 String execute_python_command = "python " + homedirec + "/carbide/aggregation.py";
                 System.out.println(execute_python_command);
                 Process p = Runtime.getRuntime().exec(execute_python_command);
+                terminate = p.waitFor();
             } catch (IOException ex) {
                 Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
+            if (terminate == 0){
+                String folder_to_delete = homedirec + "/carbide/Combined_Data_Entry/separate_accounts";
+                File files_to_delete = new File(folder_to_delete);
+                deleteFolder(files_to_delete);
+                
+                JFrame info_frame = new JFrame();
+                JOptionPane.showMessageDialog(info_frame, "Python script has been executed!", "Done!",JOptionPane.INFORMATION_MESSAGE);
+                
+            } 
         }
         
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -1101,7 +1113,19 @@ public class account_manager_frame extends javax.swing.JFrame {
         fileWriter.close();
     }
 
-    
+    public static void deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if(files!=null) { //some JVMs return null for empty dirs
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folder.delete();
+    }
     
 
 

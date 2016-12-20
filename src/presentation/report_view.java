@@ -35,6 +35,7 @@ public class report_view extends javax.swing.JFrame {
     }
     
     public void load_combined_aggregated_table() throws IOException{
+        
         String homedirec = System.getProperty("user.home");
         String combined_aggregated_reports = homedirec + "/carbide/Combined_Data_Entry/all_aggregated_accounts";
            
@@ -84,6 +85,9 @@ public class report_view extends javax.swing.JFrame {
         }
         
         jTable1.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+        jTable1.setRowSorter(sorter);
         
     };
     
@@ -254,30 +258,31 @@ public class report_view extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        jComboBox1.setSelectedIndex(0);        
+        try {
+            jComboBox1.setSelectedIndex(0);        
+            load_combined_aggregated_table();
+        } catch (IOException ex) {
+            Logger.getLogger(report_view.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         
         String account_to_view = String.valueOf(jComboBox1.getSelectedItem());
         
-        if (account_to_view.equals("ALL")) {
-            try {
-                load_combined_aggregated_table();
-            } catch (IOException ex) {
-                Logger.getLogger(report_view.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
+        if (!account_to_view.equals("ALL")) {
             try {
                 load_separate_aggregation(account_to_view);
             } catch (IOException ex) {
                 Logger.getLogger(report_view.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else {
+            try {
+                load_combined_aggregated_table();
+            } catch (IOException ex) {
+                Logger.getLogger(report_view.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        
-        
-        
-        
         
     }//GEN-LAST:event_jButton2ActionPerformed
 

@@ -314,8 +314,16 @@ public class data_entry extends javax.swing.JFrame {
                 total_data_entry_table.add(new_entry);
             } else {
                 try {
+                    
+                    String to_select = String.valueOf(jComboBox3.getSelectedItem());
                     String homedirec = System.getProperty("user.home");
-                    String account_weights_direc = homedirec + "/carbide/accounts/account_weights.csv";
+                    String account_weights_direc = null;
+                    
+                    if (to_select.equals("Absolute")){
+                        account_weights_direc = homedirec + "/carbide/accounts/account_weights.csv";
+                    } else {
+                        account_weights_direc = homedirec + "/carbide/accounts/account_weights_hedge.csv";
+                    }
 
                     BufferedReader br = null;
 
@@ -379,6 +387,7 @@ public class data_entry extends javax.swing.JFrame {
             jTextArea1.setText("");
             jComboBox1.setSelectedIndex(0);
             jComboBox2.setSelectedIndex(0);
+            jComboBox3.setSelectedIndex(0);
         }
         
    
