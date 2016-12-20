@@ -9,8 +9,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -94,10 +92,12 @@ public class report_view extends javax.swing.JFrame {
         try {
             String homedirec = System.getProperty("user.home");
             String account_name_direc = homedirec + "/carbide/accounts/accounts_hedge.csv";
+            String account_name_direc2 = homedirec + "/carbide/accounts/accounts.csv";
             
             BufferedReader br_acc = null;
 
             Object[][] data_acc = new Object[0][0];
+            Object[][] data_acc2 = new Object[0][0];
             String line = "";
             String splitSign = ",";
 
@@ -109,6 +109,17 @@ public class report_view extends javax.swing.JFrame {
             }
             br_acc.close();
             data_acc = new Object[p - 1][];
+            
+            p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc2));
+
+            while (br_acc.readLine() != null) {
+                p++;
+            }
+            br_acc.close();
+            data_acc2 = new Object[p - 1][];
+            
+            
             p = 0;
             br_acc = new BufferedReader(new FileReader(account_name_direc));
             line = br_acc.readLine();
@@ -123,6 +134,22 @@ public class report_view extends javax.swing.JFrame {
                 line = br_acc.readLine();
             }
             
+            
+            p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc2));
+            line = br_acc.readLine();
+
+            line = br_acc.readLine();
+            while (line != null) {
+                data_acc2[p] = new Object[line.split(splitSign).length];
+                 for (int j = 0; j < data_acc2[p].length; j++) {
+                    data_acc2[p][j] = line.split(splitSign)[j];
+                }
+                p++;
+                line = br_acc.readLine();
+            }
+            
+            
             ArrayList<String> account_names = new ArrayList<String>();
             account_names.add("ALL");            
             
@@ -131,7 +158,13 @@ public class report_view extends javax.swing.JFrame {
                 account_info = account_info + "-" + (String) data_acc[m][1];
                 account_names.add(account_info);
             }
- 
+            
+            for (int m = 0; m < data_acc2.length; m++){
+                String account_info = (String) data_acc2[m][0];
+                account_info = account_info + "-" + (String) data_acc2[m][1];
+                account_names.add(account_info);
+            }
+            
             String[] accountarr = new String[account_names.size()];
             accountarr = account_names.toArray(accountarr);
             jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(accountarr));
