@@ -8,15 +8,9 @@ package presentation;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.RowSorter;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -30,16 +24,14 @@ public class account_view extends javax.swing.JFrame {
     /**
      * Creates new form account_view
      */
-    public account_view() {
+    public account_view(String account_file_dir) {
         initComponents();
-        load_account();
+        load_account(account_file_dir);
     }
     
-    public void load_account(){
+    public void load_account(String account_file_dir){
         
         try {
-            String homedirec = System.getProperty("user.home");
-            String account_name_direc = homedirec + "/carbide/accounts/accounts.csv";
             
             BufferedReader br = null;
 
@@ -49,7 +41,7 @@ public class account_view extends javax.swing.JFrame {
             String splitSign = ",";
 
             int i = 0;
-            br = new BufferedReader(new FileReader(account_name_direc));
+            br = new BufferedReader(new FileReader(account_file_dir));
 
             while (br.readLine() != null) {
                 i++;
@@ -57,7 +49,7 @@ public class account_view extends javax.swing.JFrame {
             br.close();
             data = new Object[i - 1][];
             i = 0;
-            br = new BufferedReader(new FileReader(account_name_direc));
+            br = new BufferedReader(new FileReader(account_file_dir));
             line = br.readLine();
             columnNames = line.split(splitSign);
 
@@ -73,24 +65,6 @@ public class account_view extends javax.swing.JFrame {
                 line = br.readLine();
             }
             
-            
-            
-//            for (String line : Files.readAllLines(Paths.get(account_name_direc + "/accounts.txt"))) {
-//                account_names.add(line);
-//            }
-//                        
-//            String[] columnNames = new String[1];
-//            columnNames[1] = "Account Name";
-//                        
-//            Object[][] accounts = new Object[account_names.size()][];
-//            int i = 0;
-//            for (String c : account_names)
-//            {
-//                accounts[i] = new Object[1];
-//                accounts[i][0] = c;
-//                i++;
-//            }
-            
             jTable1.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
@@ -100,10 +74,7 @@ public class account_view extends javax.swing.JFrame {
         }
 
     }
-    
-    
-    
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

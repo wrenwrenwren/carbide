@@ -13,10 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -48,9 +45,7 @@ public class allocation_view extends javax.swing.JFrame {
             
             String account_name_direc = homedirec + "/carbide/accounts/accounts.csv";
             
-            
-//            ArrayList<String> account_names = new ArrayList<String>();
-            
+                        
             BufferedReader br_acc = null;
 
             Object[][] data_acc = new Object[0][0];
@@ -78,16 +73,7 @@ public class allocation_view extends javax.swing.JFrame {
                 p++;
                 line = br_acc.readLine();
             }
-            
-            
-//            for (String line : Files.readAllLines(Paths.get(account_name_direc + "/accounts.csv"))) {
-//                account_names.add(line);
-//            }
-//            
-            
-//            String[] accountarr = new String[data_acc.length];
-//            accountarr = account_names.toArray(accountarr);
-            
+                       
             File account_weights_file = new File(account_weights_direc);
             long file_length = account_weights_file.length();
 
@@ -118,8 +104,6 @@ public class allocation_view extends javax.swing.JFrame {
 
                 String[] columnNames = new String[0];
                 Object[][] data = new Object[0][0];
-//                String line = "";
-//                String splitSign = ",";
 
                 int i = 0;
                 br = new BufferedReader(new FileReader(account_weights_direc));
@@ -384,8 +368,7 @@ public class allocation_view extends javax.swing.JFrame {
         int nRow = dtm.getRowCount();
         int nCol = dtm.getColumnCount();
         
-        String homedirec = System.getProperty("user.home");
-        String account_weights_direc = homedirec + "/carbide/accounts/account_weights.csv";
+        String account_weights_direc = System.getProperty("user.home") + "/carbide/accounts/account_weights.csv";
         new File(account_weights_direc).delete();
 
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(account_weights_direc), "utf-8"));
