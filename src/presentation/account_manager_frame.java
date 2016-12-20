@@ -17,13 +17,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -52,8 +48,6 @@ public class account_manager_frame extends javax.swing.JFrame {
         if (!new File(carbide_dir).exists()) {
             new File(carbide_dir).mkdir();
         }
-        
-        System.out.println(System.getProperty("os.name"));
         
     }
 
@@ -469,13 +463,6 @@ public class account_manager_frame extends javax.swing.JFrame {
             } else if (name == null) {
                 JOptionPane.getRootFrame().dispose();   
             } else {
-//                ArrayList<String> current_accounts = new ArrayList<String>();
-//                for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
-//                    current_accounts.add(line);
-//                }
-                            
-            
-    //            ArrayList<String> account_names = new ArrayList<String>();
                 String[] fcm_account = name.split(",");
                 String fcm_name = fcm_account[0];
                 String account_name = fcm_account[1];
@@ -550,17 +537,6 @@ public class account_manager_frame extends javax.swing.JFrame {
                         }
                     }
                     
-                    
-//                    for(String str: current_accounts) {
-//                        int j = 1;
-//
-//                        if (j !=  current_accounts.size()){
-//                            writer.write(str + System.lineSeparator());
-//                        } else {
-//                            writer.write(str);
-//                        }
-//                    }
-
                     writer.close();
                 } else {
                     JOptionPane.showMessageDialog(error_frame, "Account name existed!", "Error in Account Name!",JOptionPane.ERROR_MESSAGE);
@@ -619,20 +595,7 @@ public class account_manager_frame extends javax.swing.JFrame {
             Object[] current_account = current_accounts.toArray(new Object[current_accounts.size()]);
             
             String nametodelete = (String) JOptionPane.showInputDialog(null, "Account to Delete:", "Delete an account", JOptionPane.QUESTION_MESSAGE, null, current_account, current_account[0]); 
-            
 
-            
-//            ArrayList<String> current_accounts = new ArrayList<String>();
-//            
-//            for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
-//                current_accounts.add(line);
-//
-//            }
-//            Object[] current_account = current_accounts.toArray(new Object[current_accounts.size()]);
-//
-//            String nametodelete = (String) JOptionPane.showInputDialog(null, "Account to Delete:", "Delete an account", JOptionPane.QUESTION_MESSAGE, null, current_account, current_account[0]); 
-//
-//            ArrayList<String> account_names = new ArrayList<String>();
             if (nametodelete != null && ("".equals(nametodelete))) {
                 JOptionPane.showMessageDialog(error_frame, "Please input an account name. It can't be NULL.", "Error in Account Name!",JOptionPane.ERROR_MESSAGE);
             } else if (nametodelete == null) {
@@ -692,26 +655,6 @@ public class account_manager_frame extends javax.swing.JFrame {
                         }
                     }
                 
-                
-//                for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
-//                    if (!line.contains(nametodelete)){
-//                        account_names.add(line);
-//                    }
-//                }
-            
-//                File f = new File(account_name_direc);
-//                f.delete();
-//            
-//                FileWriter writer = new FileWriter(account_name_direc);
-//                
-//                for(String str: account_names) {
-//                    int j = 1;
-//                    if (j !=  account_names.size()){
-//                        writer.write(str + System.lineSeparator());
-//                    } else {
-//                        writer.write(str);
-//                    }
-//                }
                 writer.close();
             
 
@@ -727,8 +670,9 @@ public class account_manager_frame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        
-        account_view account = new account_view();
+
+        String account_name_direc = System.getProperty("user.home") + "/carbide/accounts/accounts.csv";
+        account_view account = new account_view(account_name_direc);
         account.setTitle("Accounts");
         account.setVisible(true);
         account.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -761,13 +705,7 @@ public class account_manager_frame extends javax.swing.JFrame {
             } else if (name == null) {
                 JOptionPane.getRootFrame().dispose();   
             } else {
-//                ArrayList<String> current_accounts = new ArrayList<String>();
-//                for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
-//                    current_accounts.add(line);
-//                }
-                            
-            
-    //            ArrayList<String> account_names = new ArrayList<String>();
+
                 String[] fcm_account = name.split(",");
                 String fcm_name = fcm_account[0];
                 String account_name = fcm_account[1];
@@ -805,7 +743,6 @@ public class account_manager_frame extends javax.swing.JFrame {
                         if (data_acc[m][0].equals(fcm_name) && data_acc[m][1].equals(account_name)){
                             existed = true;
                         }
-                    
                 }
                 
                 if (existed == false){
@@ -842,17 +779,6 @@ public class account_manager_frame extends javax.swing.JFrame {
                         }
                     }
                     
-                    
-//                    for(String str: current_accounts) {
-//                        int j = 1;
-//
-//                        if (j !=  current_accounts.size()){
-//                            writer.write(str + System.lineSeparator());
-//                        } else {
-//                            writer.write(str);
-//                        }
-//                    }
-
                     writer.close();
                 } else {
                     JOptionPane.showMessageDialog(error_frame, "Account name existed!", "Error in Account Name!",JOptionPane.ERROR_MESSAGE);
@@ -867,7 +793,8 @@ public class account_manager_frame extends javax.swing.JFrame {
 
     private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
         
-        account_view_hedge account = new account_view_hedge();
+        String account_name_direc = System.getProperty("user.home") + "/carbide/accounts/accounts_hedge.csv";
+        account_view account = new account_view(account_name_direc);
         account.setTitle("Accounts");
         account.setVisible(true);
         account.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -919,20 +846,7 @@ public class account_manager_frame extends javax.swing.JFrame {
             Object[] current_account = current_accounts.toArray(new Object[current_accounts.size()]);
             
             String nametodelete = (String) JOptionPane.showInputDialog(null, "Account to Delete:", "Delete an account", JOptionPane.QUESTION_MESSAGE, null, current_account, current_account[0]); 
-            
 
-            
-//            ArrayList<String> current_accounts = new ArrayList<String>();
-//            
-//            for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
-//                current_accounts.add(line);
-//
-//            }
-//            Object[] current_account = current_accounts.toArray(new Object[current_accounts.size()]);
-//
-//            String nametodelete = (String) JOptionPane.showInputDialog(null, "Account to Delete:", "Delete an account", JOptionPane.QUESTION_MESSAGE, null, current_account, current_account[0]); 
-//
-//            ArrayList<String> account_names = new ArrayList<String>();
             if (nametodelete != null && ("".equals(nametodelete))) {
                 JOptionPane.showMessageDialog(error_frame, "Please input an account name. It can't be NULL.", "Error in Account Name!",JOptionPane.ERROR_MESSAGE);
             } else if (nametodelete == null) {
@@ -993,25 +907,7 @@ public class account_manager_frame extends javax.swing.JFrame {
                     }
                 
                 
-//                for (String line : Files.readAllLines(Paths.get(account_name_direc))) {
-//                    if (!line.contains(nametodelete)){
-//                        account_names.add(line);
-//                    }
-//                }
-            
-//                File f = new File(account_name_direc);
-//                f.delete();
-//            
-//                FileWriter writer = new FileWriter(account_name_direc);
-//                
-//                for(String str: account_names) {
-//                    int j = 1;
-//                    if (j !=  account_names.size()){
-//                        writer.write(str + System.lineSeparator());
-//                    } else {
-//                        writer.write(str);
-//                    }
-//                }
+
                 writer.close();
             
 
