@@ -692,8 +692,8 @@ public class account_manager_frame extends javax.swing.JFrame {
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
         try {
-            JFrame frame = new JFrame("Adding a new account");
-            String name = JOptionPane.showInputDialog(frame, "New Account(Format: FCM,Account Name):");
+            JFrame frame = new JFrame("Adding a new hedge account");
+            String name = JOptionPane.showInputDialog(frame, "New Hedge Account(Format: FCM,Account Name):");
 
             
             String homedirec = System.getProperty("user.home");
@@ -795,7 +795,7 @@ public class account_manager_frame extends javax.swing.JFrame {
         
         String account_name_direc = System.getProperty("user.home") + "/carbide/accounts/accounts_hedge.csv";
         account_view account = new account_view(account_name_direc);
-        account.setTitle("Accounts");
+        account.setTitle("Hedge Accounts");
         account.setVisible(true);
         account.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
@@ -845,7 +845,7 @@ public class account_manager_frame extends javax.swing.JFrame {
             }
             Object[] current_account = current_accounts.toArray(new Object[current_accounts.size()]);
             
-            String nametodelete = (String) JOptionPane.showInputDialog(null, "Account to Delete:", "Delete an account", JOptionPane.QUESTION_MESSAGE, null, current_account, current_account[0]); 
+            String nametodelete = (String) JOptionPane.showInputDialog(null, "Hedge Account to Delete:", "Delete a hedge account", JOptionPane.QUESTION_MESSAGE, null, current_account, current_account[0]); 
 
             if (nametodelete != null && ("".equals(nametodelete))) {
                 JOptionPane.showMessageDialog(error_frame, "Please input an account name. It can't be NULL.", "Error in Account Name!",JOptionPane.ERROR_MESSAGE);
@@ -920,7 +920,7 @@ public class account_manager_frame extends javax.swing.JFrame {
 
     private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
         allocation_view_hedge allocation_weights = new allocation_view_hedge();
-        allocation_weights.setTitle("Allocation Weight");
+        allocation_weights.setTitle("Hedge Accounht Allocation Weight");
         allocation_weights.setVisible(true);
         allocation_weights.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }//GEN-LAST:event_jMenuItem12ActionPerformed
