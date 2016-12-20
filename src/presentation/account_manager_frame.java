@@ -235,7 +235,7 @@ public class account_manager_frame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(49, 49, 49)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -948,81 +948,83 @@ public class account_manager_frame extends javax.swing.JFrame {
         ArrayList<File> files = new ArrayList<File>();
         
         for (int i = 0; i < listOfFiles.length; i++){
-            
+
             if (listOfFiles[i].getName().contains(".csv")) {
                 files.add(listOfFiles[i]);
             }
-    
+
         }
         
-        File folder_to_delete = new File(combined_entry);
-        File[] listOfFiles_to_delete = folder_to_delete.listFiles();
-        
-        for (int i = 0; i < listOfFiles_to_delete.length; i++){
-            
-            if (listOfFiles_to_delete[i].getName().contains(".csv")) {
-                listOfFiles_to_delete[i].delete();
+        if (files.size() != 0){
+            File folder_to_delete = new File(combined_entry);
+            File[] listOfFiles_to_delete = folder_to_delete.listFiles();
+
+            for (int i = 0; i < listOfFiles_to_delete.length; i++){
+
+                if (listOfFiles_to_delete[i].getName().contains(".csv")) {
+                    listOfFiles_to_delete[i].delete();
+                }
+
             }
-    
-        }
-        
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH_mm_ss");
-        Date date = new Date();
-        String csvFinal = combined_entry + "/" +  dateFormat.format(date) +"-combined.csv";
-        
-        File fileOutput = new File(csvFinal);
-        if (fileOutput.exists()) {
-            fileOutput.delete();
-        }
-        try {
-            fileOutput.createNewFile();
-        } catch (IOException e) {
-        }
-        
-        Iterator<File> iterFiles = files.iterator();
-        BufferedWriter fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(csvFinal), "UTF-8"));
-        
-        String firstFile = null;
-        for (int i = 0; i < listOfFiles.length; i++) {
- 
-            if (listOfFiles[i].getName().contains(".csv")) {
-                firstFile = listOfFiles[i].getPath();
-                break;
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH_mm_ss");
+            Date date = new Date();
+            String csvFinal = combined_entry + "/" +  dateFormat.format(date) +"-combined.csv";
+
+            File fileOutput = new File(csvFinal);
+            if (fileOutput.exists()) {
+                fileOutput.delete();
             }
-        }
-        
-        Scanner scanner = new Scanner(new File(firstFile));
-        
-        if (scanner.hasNextLine()) {
-            headers = scanner.nextLine();
-        }
-        
-        scanner.close();
-        
-        fileWriter.write(headers);
-        fileWriter.newLine();
-        
-        BufferedReader fileReader;
-        
-        while (iterFiles.hasNext()) {
-
-            String line;
-            String[] firstLine;
-
-            File nextFile = iterFiles.next();
-            fileReader = new BufferedReader(new FileReader(nextFile));
-
-            if ((line = fileReader.readLine()) != null)
-                firstLine = line.split(";");
-
-            while ((line = fileReader.readLine()) != null) {
-                fileWriter.write(line);
-                fileWriter.newLine();
+            try {
+                fileOutput.createNewFile();
+            } catch (IOException e) {
             }
-            fileReader.close();
-        }
 
-        fileWriter.close();
+            Iterator<File> iterFiles = files.iterator();
+            BufferedWriter fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(csvFinal), "UTF-8"));
+
+            String firstFile = null;
+            for (int i = 0; i < listOfFiles.length; i++) {
+
+                if (listOfFiles[i].getName().contains(".csv")) {
+                    firstFile = listOfFiles[i].getPath();
+                    break;
+                }
+            }
+
+            Scanner scanner = new Scanner(new File(firstFile));
+
+            if (scanner.hasNextLine()) {
+                headers = scanner.nextLine();
+            }
+
+            scanner.close();
+
+            fileWriter.write(headers);
+            fileWriter.newLine();
+
+            BufferedReader fileReader;
+
+            while (iterFiles.hasNext()) {
+
+                String line;
+                String[] firstLine;
+
+                File nextFile = iterFiles.next();
+                fileReader = new BufferedReader(new FileReader(nextFile));
+
+                if ((line = fileReader.readLine()) != null)
+                    firstLine = line.split(";");
+
+                while ((line = fileReader.readLine()) != null) {
+                    fileWriter.write(line);
+                    fileWriter.newLine();
+                }
+                fileReader.close();
+            }
+
+            fileWriter.close();
+        } 
     }
     
     public void aggregatemerge_csv(String combined_entry) throws FileNotFoundException, IOException{
