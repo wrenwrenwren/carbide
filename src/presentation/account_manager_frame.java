@@ -1277,13 +1277,20 @@ public class account_manager_frame extends javax.swing.JFrame {
                 
                 if ( m != 0){
                     boolean existed = false;
-                    for (int q = m; q > 0; q--){
-                        if(data3[m][1].equals(data3[q][1]) && data3[m][3].equals(data3[q][3]) && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]) && data3[m][8].equals(data3[q][8])){
+                    
+                    for (int q = m - 1; q > -1; q--){
+                        
+                        boolean matching = (data3[m][1].equals(data3[q][1]) && data3[m][3].equals(data3[q][3]) && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]));               
+                        
+                        if(matching){
                             existed = true;
                         }
-                        
+                    
+                    }
+
+                    
                     if (!existed){
-                        for (int p = 0; p < data3.length; p++){
+                        for (int p = m + 1; p < data3.length; p++){
                             boolean matching = (data3[m][1].equals(data3[p][1]) && data3[m][3].equals(data3[p][3]) && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]));
                             if (matching){
                                 finalamount =  finalamount + Float.valueOf((String) data3[p][2]);
@@ -1295,7 +1302,7 @@ public class account_manager_frame extends javax.swing.JFrame {
                         buffer2.append(to_append);
                         writer2.write(buffer2.toString() + "\r\n");
                     }
-                    }
+                    
                 } else {
                     for (int p = 1; p < data3.length; p++){
                         boolean matching = (data3[m][1].equals(data3[p][1]) && data3[m][3].equals(data3[p][3]) && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]));
@@ -1326,7 +1333,6 @@ public class account_manager_frame extends javax.swing.JFrame {
                     if (name.contains(".csv")){
                         separate_aggregated_dir = dataentry_path + "/separate_aggregated_accounts";
                         separate_aggregated_dir += "/" + name;
-                        System.out.println(separate_aggregated_dir);
                         File sep_agg_file_to_delete = new File(separate_aggregated_dir);
                         sep_agg_file_to_delete.delete();
                     }
@@ -1384,16 +1390,13 @@ public class account_manager_frame extends javax.swing.JFrame {
                         if ( m != 0){
                             boolean existed = false;
                             
-                            for (int q = m; q > 0; q--){
+                            for (int q = m - 1; q > -1; q--){
                                 boolean matching = (data3[m][1].equals(data3[q][1]) && data3[m][3].equals(data3[q][3]) && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]) && data3[m][8].equals(data3[q][8]));
-                                System.out.println(matching);
                                 if(matching){
                                     existed = true;
                                 }
                             }
-                            
-                            System.out.println(existed);
-                            
+
                             if (!existed) {     
                                 for (int s = m + 1; s < data3.length; s++){
                                     boolean matching = (data3[m][1].equals(data3[s][1]) && data3[m][3].equals(data3[s][3]) && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][8].equals(data3[s][8]));
