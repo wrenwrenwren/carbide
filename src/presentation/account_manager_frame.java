@@ -16,8 +16,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.math.RoundingMode;
 import java.net.URLDecoder;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,6 +31,10 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.RowSorter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import org.bouncycastle.util.test.Test;
 
 /**
@@ -405,18 +412,20 @@ public class account_manager_frame extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         
+        
         String homedirec = System.getProperty("user.home");
         String dataentry_path = homedirec + "/carbide/Combined_Data_Entry";
         String primary_dataentry_path = homedirec + "/carbide/Data_Entry";
-        
+
+
         File folder = new File(primary_dataentry_path);
         File[] listOfFiles = folder.listFiles();
-        
+
         if (listOfFiles.length == 0){
             JFrame error_frame = new JFrame();
             JOptionPane.showMessageDialog(error_frame, "No Data Entry files!", "Error!",JOptionPane.ERROR_MESSAGE);
         } else {
-            
+
             if (new File(dataentry_path).exists()) {
                 try {
                     merge_csv(dataentry_path);
@@ -424,38 +433,24 @@ public class account_manager_frame extends javax.swing.JFrame {
                     Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                } else {
-                    try {
-                        new File(dataentry_path).mkdir();
-                        merge_csv(dataentry_path);
-                    } catch (IOException ex) {
-                        Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+            } else {
+                try {
+                    new File(dataentry_path).mkdir();
+                    merge_csv(dataentry_path);
+                } catch (IOException ex) {
+                    Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
 
-            int terminate = 10;
-
-
-            try {
-                String execute_python_command = "python " + homedirec + "/carbide/aggregation.py";
-                System.out.println(execute_python_command);
-                Process p = Runtime.getRuntime().exec(execute_python_command);
-                terminate = p.waitFor();
-            } catch (IOException ex) {
-                Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        }
             
-            if (terminate == 0){
-                String folder_to_delete = homedirec + "/carbide/Combined_Data_Entry/separate_accounts";
-                File files_to_delete = new File(folder_to_delete);
-                deleteFolder(files_to_delete);
-                
-                JFrame info_frame = new JFrame();
-                JOptionPane.showMessageDialog(info_frame, "Python script has been executed!", "Done!",JOptionPane.INFORMATION_MESSAGE);
-                
-            } 
+        try {    
+            cleancombinedfiles();
+            
+            
+            
+        } catch (IOException ex) {
+            Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -1115,6 +1110,328 @@ public class account_manager_frame extends javax.swing.JFrame {
         fileWriter.close();
     }
 
+    public void cleancombinedfiles() throws IOException {
+        try {
+            String homedirec = System.getProperty("user.home");
+            String dataentry_path = homedirec + "/carbide/Combined_Data_Entry";
+            
+            File folder = new File(dataentry_path);
+            String[] fileList = folder.list();
+            String combined_file = dataentry_path;
+            for(String name:fileList){
+                if (name.contains(".csv")){
+                    combined_file += "/" + name;
+
+                }
+            }
+            
+            
+            //function to remove 0s in combined files
+            
+            BufferedReader br = null;
+            
+            String[] columnNames = new String[0];
+            Object[][] data = new Object[0][0];
+            String line = "";
+            String splitSign = ",";
+            
+            int i = 0;
+            br = new BufferedReader(new FileReader(combined_file));
+            
+            while (br.readLine() != null) {
+                i++;
+            }
+            br.close();
+            data = new Object[i - 1][];
+            i = 0;
+            br = new BufferedReader(new FileReader(combined_file));
+            line = br.readLine();
+            columnNames = line.split(splitSign);
+            
+            line = br.readLine();
+            while (line != null) {
+                data[i] = new Object[line.split(splitSign).length];
+                
+                for (int j = 0; j < data[i].length; j++) {
+                    data[i][j] = line.split(splitSign)[j];
+                }
+                i++;
+                line = br.readLine();
+            }
+            
+                        
+            File file_to_delete = new File(combined_file);
+            file_to_delete.delete();
+
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH_mm_ss");
+            Date date = new Date();
+            
+            String cleaned_combined_file = dataentry_path + "/" +  dateFormat.format(date) +"-combined.csv";
+            
+            Writer writer = null;
+
+
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cleaned_combined_file), "utf-8"));
+
+            StringBuffer bufferHeader = new StringBuffer();
+            
+            for (int j = 0; j < columnNames.length; j++) {
+                bufferHeader.append(columnNames[j]);
+                if (j!=columnNames.length-1) bufferHeader.append(",");
+            }
+            writer.write(bufferHeader.toString() + "\r\n");
+            
+            
+            for (int m = 0; m < data.length; m++){
+                StringBuffer buffer = new StringBuffer();
+                if (Float.valueOf((String) data[m][2])!= 0.0){
+                    for (int x = 0; x < data[m].length; x++){
+                        buffer.append(data[m][x]);
+                        if (x!=data[m].length-1) buffer.append(",");
+                    }
+                    writer.write(buffer.toString() + "\r\n");
+                }
+            }
+            writer.close();
+            
+            
+            
+            
+            File folder3 = new File(dataentry_path);
+            String[] fileList3 = folder3.list();
+            String new_combined_file = dataentry_path;
+            for(String name:fileList3){
+                if (name.contains(".csv")){
+                    new_combined_file += "/" + name;
+                }
+            }
+            
+            String line3 ="";
+            BufferedReader br3 = null;
+            Object[][] data3 = new Object[0][0];
+            
+            int u = 0;
+            br3 = new BufferedReader(new FileReader(new_combined_file));
+            
+            while (br3.readLine() != null) {
+                u++;
+            }
+            br3.close();
+            data3 = new Object[u - 1][];
+            u = 0;
+            br3 = new BufferedReader(new FileReader(new_combined_file));
+            line3 = br3.readLine();
+            
+            line3 = br3.readLine();
+            while (line3 != null) {
+                data3[u] = new Object[line3.split(splitSign).length];
+                
+                for (int j = 0; j < data3[u].length; j++) {
+                    data3[u][j] = line3.split(splitSign)[j];
+                }
+                u++;
+                line3 = br3.readLine();
+            }
+            
+            
+            
+            ///aggregation codes
+            String all_aggregated_dir = dataentry_path + "/all_aggregated_accounts";
+            File all_aggregated_folder = new File(all_aggregated_dir);
+            if (!all_aggregated_folder.exists()) {
+                        new File(all_aggregated_dir).mkdir();
+            } else {
+                String[] aggregate_fileList = all_aggregated_folder.list();
+                String previous_aggreate_files = "";
+                for(String name:aggregate_fileList){
+                    if (name.contains(".csv")){
+                        all_aggregated_dir = dataentry_path + "/all_aggregated_accounts";
+                        previous_aggreate_files = all_aggregated_dir + "/" + name;
+                        File agg_file_to_delete = new File(previous_aggreate_files);
+                        agg_file_to_delete.delete();
+                    }
+                }
+            }
+            
+            DateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd");
+            Date date2 = new Date();
+            
+            String all_aggregated = all_aggregated_dir + "/" + "ALL-" + dateFormat2.format(date2) +"-aggregated.csv";
+            
+            Writer writer2 = null;
+            writer2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(all_aggregated), "utf-8"));
+
+            StringBuffer bufferHeader2 = new StringBuffer();
+                        
+            
+            bufferHeader2.append("Date,Symbol,Strike,Type,Expiry,Amount,Price");
+            writer2.write(bufferHeader2.toString() + "\r\n");
+            DecimalFormat df = new DecimalFormat("#.####");
+            df.setRoundingMode(RoundingMode.CEILING);
+            
+            for (int m = 0; m < data3.length; m++){
+                float finalamount = Float.valueOf((String) data3[m][2]);
+                float averaged_price = Float.valueOf((String) data3[m][4]) * finalamount;
+                StringBuffer buffer2 = new StringBuffer();
+                
+                if ( m != 0){
+                    boolean existed = false;
+                    for (int q = m; q > 0; q--){
+                        if(data3[m][1].equals(data3[q][1]) && data3[m][3].equals(data3[q][3]) && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]) && data3[m][8].equals(data3[q][8])){
+                            existed = true;
+                        }
+                        
+                    if (!existed){
+                        for (int p = 0; p < data3.length; p++){
+                            boolean matching = (data3[m][1].equals(data3[p][1]) && data3[m][3].equals(data3[p][3]) && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]));
+                            if (matching){
+                                finalamount =  finalamount + Float.valueOf((String) data3[p][2]);
+                                averaged_price = averaged_price + Float.valueOf((String) data3[p][4]) * Float.valueOf((String) data3[p][2]);
+
+                            }
+                        }
+                        String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount);
+                        buffer2.append(to_append);
+                        writer2.write(buffer2.toString() + "\r\n");
+                    }
+                    }
+                } else {
+                    for (int p = 1; p < data3.length; p++){
+                        boolean matching = (data3[m][1].equals(data3[p][1]) && data3[m][3].equals(data3[p][3]) && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]));
+                        
+                        if (matching){
+                            finalamount =  finalamount + Float.valueOf((String) data3[p][2]);
+                            averaged_price = averaged_price + Float.valueOf((String) data3[p][4]) * Float.valueOf((String) data3[p][2]);
+                        }
+                    }
+                    String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount);
+                    buffer2.append(to_append);
+                    writer2.write(buffer2.toString() + "\r\n");
+                }
+            }
+            writer2.close();
+            
+            
+            
+            ///separate_aggregation
+            String separate_aggregated_dir = dataentry_path + "/separate_aggregated_accounts";
+            File separate_aggregated_folder = new File(separate_aggregated_dir);
+            if (!separate_aggregated_folder.exists()) {
+                        new File(separate_aggregated_dir).mkdir();
+            } else {
+                //code to delete previous separate aggregated code
+                String[] separate_aggregate_fileList = separate_aggregated_folder.list();
+                for(String name:separate_aggregate_fileList){
+                    if (name.contains(".csv")){
+                        separate_aggregated_dir = dataentry_path + "/separate_aggregated_accounts";
+                        separate_aggregated_dir += "/" + name;
+                        System.out.println(separate_aggregated_dir);
+                        File sep_agg_file_to_delete = new File(separate_aggregated_dir);
+                        sep_agg_file_to_delete.delete();
+                    }
+                }   
+            }
+            
+
+            
+            
+            System.out.println(dateFormat2.format(date2));
+            
+            
+            ArrayList<String> distinct_account_names = new ArrayList<String>();
+            
+            for (int x = 0; x < data3.length; x++){
+                
+                if (x == 0){
+                    distinct_account_names.add((String) data3[x][8]);
+                } else {
+                    boolean existed = false;
+                    
+                    for (int y = 0; y < distinct_account_names.size(); y++){
+                        if (data3[x][8].equals(distinct_account_names.get(y))){
+                            existed = true;
+                        }
+                    }
+                    if (!existed){
+                        distinct_account_names.add((String) data3[x][8]);
+                    }
+                }
+            }
+            
+            Writer writer3 = null;
+            
+            for (int p = 0; p < distinct_account_names.size(); p++){
+                
+                separate_aggregated_dir = dataentry_path + "/separate_aggregated_accounts";;
+                separate_aggregated_dir = separate_aggregated_dir + "/" + distinct_account_names.get(p) + "-" + dateFormat2.format(date2) +"-aggregated.csv";
+                writer3 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(separate_aggregated_dir), "utf-8"));
+                
+                StringBuffer bufferHeader3 = new StringBuffer();
+                bufferHeader3.append("Date,Symbol,Strike,Type,Expiry,Amount,Price,Account");
+                writer3.write(bufferHeader3.toString() + "\r\n");
+                
+                String current_account_name = distinct_account_names.get(p);
+                
+                for (int m = 0; m < data3.length; m++){
+                    
+                    if (data3[m][8].equals(current_account_name)) {
+                        
+                        float finalamount = Float.valueOf((String) data3[m][2]);
+                        float averaged_price = Float.valueOf((String) data3[m][4]) * finalamount;
+                        StringBuffer buffer3 = new StringBuffer();
+
+                        if ( m != 0){
+                            boolean existed = false;
+                            
+                            for (int q = m; q > 0; q--){
+                                boolean matching = (data3[m][1].equals(data3[q][1]) && data3[m][3].equals(data3[q][3]) && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]) && data3[m][8].equals(data3[q][8]));
+                                System.out.println(matching);
+                                if(matching){
+                                    existed = true;
+                                }
+                            }
+                            
+                            System.out.println(existed);
+                            
+                            if (!existed) {     
+                                for (int s = m + 1; s < data3.length; s++){
+                                    boolean matching = (data3[m][1].equals(data3[s][1]) && data3[m][3].equals(data3[s][3]) && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][8].equals(data3[s][8]));
+                                    if (matching){
+                                        finalamount =  finalamount + Float.valueOf((String) data3[p][2]);
+                                        averaged_price = averaged_price + Float.valueOf((String) data3[p][4]) * Float.valueOf((String) data3[p][2]);
+                                    }
+                                }
+                                String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount) + "," + data3[m][8];
+                                buffer3.append(to_append);
+                                writer3.write(buffer3.toString() + "\r\n");
+                            }
+                        } else {
+                            for (int s = 1; s < data3.length; s++){
+                                boolean matching = (data3[m][1].equals(data3[s][1]) && data3[m][3].equals(data3[s][3]) && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][8].equals(data3[s][8]));
+
+                                if (matching){
+                                    finalamount =  finalamount + Float.valueOf((String) data3[s][2]);
+                                    averaged_price = averaged_price + Float.valueOf((String) data3[s][4]) * Float.valueOf((String) data3[s][2]);
+                                }
+                            }
+                            String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount) + "," + data3[m][8];
+                            buffer3.append(to_append);
+                            writer3.write(buffer3.toString() + "\r\n");
+                        }
+                    }
+                }
+                writer3.close();
+            }
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
+    
+    
     public static void deleteFolder(File folder) {
         File[] files = folder.listFiles();
         if(files!=null) { //some JVMs return null for empty dirs
@@ -1129,7 +1446,6 @@ public class account_manager_frame extends javax.swing.JFrame {
         folder.delete();
     }
     
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
