@@ -1339,11 +1339,6 @@ public class account_manager_frame extends javax.swing.JFrame {
                 }   
             }
             
-
-            
-            
-            System.out.println(dateFormat2.format(date2));
-            
             
             ArrayList<String> distinct_account_names = new ArrayList<String>();
             
