@@ -400,6 +400,8 @@ public class data_entry extends javax.swing.JFrame {
         if (new File(dataentry_path).exists()) {
             try {
                 writeToCSV(total_data_entry_table, dataentry_path);
+                total_data_entry_table.clear();
+                        
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(data_entry.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -408,6 +410,8 @@ public class data_entry extends javax.swing.JFrame {
             new File(dataentry_path).mkdir();
             try {
                 writeToCSV(total_data_entry_table, dataentry_path);
+                total_data_entry_table.clear();
+                
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(data_entry.class.getName()).log(Level.SEVERE, null, ex);
             }
