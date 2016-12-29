@@ -1391,15 +1391,16 @@ public class account_manager_frame extends javax.swing.JFrame {
                                     existed = true;
                                 }
                             }
-
+                            
                             if (!existed) {     
                                 for (int s = m + 1; s < data3.length; s++){
                                     boolean matching = (data3[m][1].equals(data3[s][1]) && data3[m][3].equals(data3[s][3]) && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][8].equals(data3[s][8]));
                                     if (matching){
-                                        finalamount =  finalamount + Float.valueOf((String) data3[p][2]);
-                                        averaged_price = averaged_price + Float.valueOf((String) data3[p][4]) * Float.valueOf((String) data3[p][2]);
+                                        finalamount =  finalamount + Float.valueOf((String) data3[s][2]);
+                                        averaged_price = averaged_price + Float.valueOf((String) data3[s][4]) * Float.valueOf((String) data3[s][2]);
                                     }
                                 }
+                                
                                 String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount) + "," + data3[m][8];
                                 buffer3.append(to_append);
                                 writer3.write(buffer3.toString() + "\r\n");
