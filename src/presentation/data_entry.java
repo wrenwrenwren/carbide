@@ -265,7 +265,7 @@ public class data_entry extends javax.swing.JFrame {
         if (amount_string.equals("")) {
             amount = 0;
         } else {
-            amount = Float.valueOf(amount_string);
+            amount = Float.parseFloat(amount_string);
         }
         
         float strike;
@@ -274,7 +274,7 @@ public class data_entry extends javax.swing.JFrame {
         if (strike_string.equals("")) {
             strike = 0;
         } else {
-            strike = Float.valueOf(strike_string);
+            strike = Float.parseFloat(strike_string);
         }
         
         float price;
@@ -283,7 +283,7 @@ public class data_entry extends javax.swing.JFrame {
         if (price_string.equals("")) {
             price = 0;
         } else {
-            price = Float.valueOf(price_string);
+            price = Float.parseFloat(price_string);
         }
 
         String type = String.valueOf(jComboBox1.getSelectedItem());
@@ -306,6 +306,7 @@ public class data_entry extends javax.swing.JFrame {
                 new_entry.Amount = amount;
                 new_entry.Strike = strike;
                 new_entry.Price = price;
+                System.out.println(price);
                 new_entry.Type = type;
                 new_entry.Expiry = expiry;
                 new_entry.Comments = comments;
@@ -360,7 +361,8 @@ public class data_entry extends javax.swing.JFrame {
 
                         new_entry.Date = date;
                         new_entry.Symbol = symbol;
-                        new_entry.Amount = Math.round(amount * Float.valueOf((String) data[j][3]));
+                        float weight_to_use = Float.parseFloat((String) data[j][3]);
+                        new_entry.Amount = Math.round(amount * weight_to_use);
                         new_entry.Strike = strike;
                         new_entry.Price = price;
                         new_entry.Type = type;
