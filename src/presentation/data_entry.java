@@ -576,6 +576,7 @@ public class data_entry extends javax.swing.JFrame {
                 oneLine.append(items.getComments());
                 oneLine.append(CSV_SEPARATOR);
                 oneLine.append(items.getAccount());
+                System.out.println(oneLine.toString());
                 bw.write(oneLine.toString());
                 bw.newLine();
             }

@@ -57,7 +57,9 @@ public class account_manager_frame extends javax.swing.JFrame {
         }
         
     }
-
+    
+    float epsilon = (float) 0.00001;
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1277,13 +1279,17 @@ public class account_manager_frame extends javax.swing.JFrame {
                 float finalamount = Float.valueOf((String) data3[m][2]);
                 float averaged_price = Float.valueOf((String) data3[m][4]) * finalamount;
                 StringBuffer buffer2 = new StringBuffer();
+                float prev_strike = Float.valueOf((String) data3[m][3]);
                 
                 if ( m != 0){
                     boolean existed = false;
                     
                     for (int q = m - 1; q > -1; q--){
                         
-                        boolean matching = (data3[m][1].equals(data3[q][1]) && data3[m][3].equals(data3[q][3]) && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]));               
+                        float curr_strike = Float.valueOf((String) data3[q][3]);
+                        boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
+                        
+                        boolean matching = (data3[m][1].equals(data3[q][1]) && compare && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]));               
                         
                         if(matching){
                             existed = true;
@@ -1294,7 +1300,10 @@ public class account_manager_frame extends javax.swing.JFrame {
                     
                     if (!existed){
                         for (int p = m + 1; p < data3.length; p++){
-                            boolean matching = (data3[m][1].equals(data3[p][1]) && data3[m][3].equals(data3[p][3]) && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]));
+                            float curr_strike = Float.valueOf((String) data3[p][3]);
+                            boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
+                            
+                            boolean matching = (data3[m][1].equals(data3[p][1]) && compare && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]));
                             if (matching){
                                 finalamount =  finalamount + Float.valueOf((String) data3[p][2]);
                                 averaged_price = averaged_price + Float.valueOf((String) data3[p][4]) * Float.valueOf((String) data3[p][2]);
@@ -1308,7 +1317,11 @@ public class account_manager_frame extends javax.swing.JFrame {
                     
                 } else {
                     for (int p = 1; p < data3.length; p++){
-                        boolean matching = (data3[m][1].equals(data3[p][1]) && data3[m][3].equals(data3[p][3]) && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]));
+                        
+                        float curr_strike = Float.valueOf((String) data3[p][3]);
+                        boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
+                            
+                        boolean matching = (data3[m][1].equals(data3[p][1]) && compare && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]));
                         
                         if (matching){
                             finalamount =  finalamount + Float.valueOf((String) data3[p][2]);
@@ -1319,6 +1332,10 @@ public class account_manager_frame extends javax.swing.JFrame {
                     buffer2.append(to_append);
                     writer2.write(buffer2.toString() + "\r\n");
                 }
+                
+                
+                
+                
             }
             writer2.close();
             
@@ -1384,12 +1401,17 @@ public class account_manager_frame extends javax.swing.JFrame {
                         float finalamount = Float.valueOf((String) data3[m][2]);
                         float averaged_price = Float.valueOf((String) data3[m][4]) * finalamount;
                         StringBuffer buffer3 = new StringBuffer();
+                        float prev_strike = Float.valueOf((String) data3[m][3]);
+
 
                         if ( m != 0){
                             boolean existed = false;
                             
                             for (int q = m - 1; q > -1; q--){
-                                boolean matching = (data3[m][1].equals(data3[q][1]) && data3[m][3].equals(data3[q][3]) && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]) && data3[m][8].equals(data3[q][8]));
+                                float curr_strike = Float.valueOf((String) data3[q][3]);
+                                boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
+                                
+                                boolean matching = (data3[m][1].equals(data3[q][1]) && compare && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]) && data3[m][8].equals(data3[q][8]));
                                 if(matching){
                                     existed = true;
                                 }
@@ -1397,7 +1419,10 @@ public class account_manager_frame extends javax.swing.JFrame {
                             
                             if (!existed) {     
                                 for (int s = m + 1; s < data3.length; s++){
-                                    boolean matching = (data3[m][1].equals(data3[s][1]) && data3[m][3].equals(data3[s][3]) && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][8].equals(data3[s][8]));
+                                    float curr_strike = Float.valueOf((String) data3[s][3]);
+                                    boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
+                                
+                                    boolean matching = (data3[m][1].equals(data3[s][1]) && compare && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][8].equals(data3[s][8]));
                                     if (matching){
                                         finalamount =  finalamount + Float.valueOf((String) data3[s][2]);
                                         averaged_price = averaged_price + Float.valueOf((String) data3[s][4]) * Float.valueOf((String) data3[s][2]);
@@ -1410,7 +1435,10 @@ public class account_manager_frame extends javax.swing.JFrame {
                             }
                         } else {
                             for (int s = 1; s < data3.length; s++){
-                                boolean matching = (data3[m][1].equals(data3[s][1]) && data3[m][3].equals(data3[s][3]) && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][8].equals(data3[s][8]));
+                                float curr_strike = Float.valueOf((String) data3[s][3]);
+                                boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
+                                
+                                boolean matching = (data3[m][1].equals(data3[s][1]) && compare && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][8].equals(data3[s][8]));
 
                                 if (matching){
                                     finalamount =  finalamount + Float.valueOf((String) data3[s][2]);
