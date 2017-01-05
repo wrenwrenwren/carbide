@@ -957,6 +957,7 @@ public class account_manager_frame extends javax.swing.JFrame {
             for (int i = 0; i < listOfFiles_to_delete.length; i++){
 
                 if (listOfFiles_to_delete[i].getName().contains(".csv")) {
+                    System.out.println(listOfFiles_to_delete[i]);
                     listOfFiles_to_delete[i].delete();
                 }
 
@@ -1158,6 +1159,7 @@ public class account_manager_frame extends javax.swing.JFrame {
                 i++;
                 line = br.readLine();
             }
+            br.close();
             
                         
             File file_to_delete = new File(combined_file);
@@ -1234,6 +1236,7 @@ public class account_manager_frame extends javax.swing.JFrame {
                 line3 = br3.readLine();
             }
             
+            br3.close();
             
             
             ///aggregation codes
