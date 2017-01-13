@@ -1128,7 +1128,6 @@ public class account_manager_frame extends javax.swing.JFrame {
                 }
             }
             
-            
             //function to remove 0s in combined files
             
             BufferedReader br = null;
@@ -1199,9 +1198,7 @@ public class account_manager_frame extends javax.swing.JFrame {
             }
             writer.close();
             
-            
-            
-            
+
             File folder3 = new File(dataentry_path);
             String[] fileList3 = folder3.list();
             String new_combined_file = dataentry_path;
@@ -1270,7 +1267,7 @@ public class account_manager_frame extends javax.swing.JFrame {
             StringBuffer bufferHeader2 = new StringBuffer();
                         
             
-            bufferHeader2.append("Date,Symbol,Strike,Type,Expiry,Amount,Price");
+            bufferHeader2.append("Date,Symbol,Strike,Type,Expiry,Month,Amount,Price");
             writer2.write(bufferHeader2.toString() + "\r\n");
             DecimalFormat df = new DecimalFormat("#.####");
             df.setRoundingMode(RoundingMode.CEILING);
@@ -1289,30 +1286,32 @@ public class account_manager_frame extends javax.swing.JFrame {
                         float curr_strike = Float.valueOf((String) data3[q][3]);
                         boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
                         
-                        boolean matching = (data3[m][1].equals(data3[q][1]) && compare && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]));               
+                        boolean matching = (data3[m][1].equals(data3[q][1]) && compare && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]) && data3[m][7].equals(data3[q][7]));               
                         
                         if(matching){
                             existed = true;
                         }
                     
                     }
-
                     
                     if (!existed){
                         for (int p = m + 1; p < data3.length; p++){
                             float curr_strike = Float.valueOf((String) data3[p][3]);
                             boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
                             
-                            boolean matching = (data3[m][1].equals(data3[p][1]) && compare && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]));
+                            boolean matching = (data3[m][1].equals(data3[p][1]) && compare && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]) && data3[m][7].equals(data3[p][7]));
                             if (matching){
                                 finalamount =  finalamount + Float.valueOf((String) data3[p][2]);
                                 averaged_price = averaged_price + Float.valueOf((String) data3[p][4]) * Float.valueOf((String) data3[p][2]);
 
                             }
                         }
-                        String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount);
-                        buffer2.append(to_append);
-                        writer2.write(buffer2.toString() + "\r\n");
+                        
+                        if (Math.abs(finalamount - 0) > epsilon){
+                            String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + data3[m][7] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount);
+                            buffer2.append(to_append);
+                            writer2.write(buffer2.toString() + "\r\n");
+                        };
                     }
                     
                 } else {
@@ -1321,20 +1320,19 @@ public class account_manager_frame extends javax.swing.JFrame {
                         float curr_strike = Float.valueOf((String) data3[p][3]);
                         boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
                             
-                        boolean matching = (data3[m][1].equals(data3[p][1]) && compare && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]));
+                        boolean matching = (data3[m][1].equals(data3[p][1]) && compare && data3[m][5].equals(data3[p][5]) && data3[m][6].equals(data3[p][6]) && data3[m][7].equals(data3[p][7]));
                         
                         if (matching){
                             finalamount =  finalamount + Float.valueOf((String) data3[p][2]);
                             averaged_price = averaged_price + Float.valueOf((String) data3[p][4]) * Float.valueOf((String) data3[p][2]);
                         }
                     }
-                    String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount);
-                    buffer2.append(to_append);
-                    writer2.write(buffer2.toString() + "\r\n");
+                    if (Math.abs(finalamount - 0) > epsilon){
+                        String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + data3[m][7] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount);
+                        buffer2.append(to_append);
+                        writer2.write(buffer2.toString() + "\r\n");
+                    }
                 }
-                
-                
-                
                 
             }
             writer2.close();
@@ -1365,17 +1363,17 @@ public class account_manager_frame extends javax.swing.JFrame {
             for (int x = 0; x < data3.length; x++){
                 
                 if (x == 0){
-                    distinct_account_names.add((String) data3[x][8]);
+                    distinct_account_names.add((String) data3[x][9]);
                 } else {
                     boolean existed = false;
                     
                     for (int y = 0; y < distinct_account_names.size(); y++){
-                        if (data3[x][8].equals(distinct_account_names.get(y))){
+                        if (data3[x][9].equals(distinct_account_names.get(y))){
                             existed = true;
                         }
                     }
                     if (!existed){
-                        distinct_account_names.add((String) data3[x][8]);
+                        distinct_account_names.add((String) data3[x][9]);
                     }
                 }
             }
@@ -1389,14 +1387,14 @@ public class account_manager_frame extends javax.swing.JFrame {
                 writer3 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(separate_aggregated_dir), "utf-8"));
                 
                 StringBuffer bufferHeader3 = new StringBuffer();
-                bufferHeader3.append("Date,Symbol,Strike,Type,Expiry,Amount,Price,Account");
+                bufferHeader3.append("Date,Symbol,Strike,Type,Expiry,Month,Amount,Price,Account");
                 writer3.write(bufferHeader3.toString() + "\r\n");
                 
                 String current_account_name = distinct_account_names.get(p);
                 
                 for (int m = 0; m < data3.length; m++){
                     
-                    if (data3[m][8].equals(current_account_name)) {
+                    if (data3[m][9].equals(current_account_name)) {
                         
                         float finalamount = Float.valueOf((String) data3[m][2]);
                         float averaged_price = Float.valueOf((String) data3[m][4]) * finalamount;
@@ -1411,7 +1409,7 @@ public class account_manager_frame extends javax.swing.JFrame {
                                 float curr_strike = Float.valueOf((String) data3[q][3]);
                                 boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
                                 
-                                boolean matching = (data3[m][1].equals(data3[q][1]) && compare && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]) && data3[m][8].equals(data3[q][8]));
+                                boolean matching = (data3[m][1].equals(data3[q][1]) && compare && data3[m][5].equals(data3[q][5]) && data3[m][6].equals(data3[q][6]) && data3[m][7].equals(data3[q][7]) && data3[m][9].equals(data3[q][9]));
                                 if(matching){
                                     existed = true;
                                 }
@@ -1422,32 +1420,36 @@ public class account_manager_frame extends javax.swing.JFrame {
                                     float curr_strike = Float.valueOf((String) data3[s][3]);
                                     boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
                                 
-                                    boolean matching = (data3[m][1].equals(data3[s][1]) && compare && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][8].equals(data3[s][8]));
+                                    boolean matching = (data3[m][1].equals(data3[s][1]) && compare && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][7].equals(data3[s][7]) && data3[m][9].equals(data3[s][9]));
                                     if (matching){
                                         finalamount =  finalamount + Float.valueOf((String) data3[s][2]);
                                         averaged_price = averaged_price + Float.valueOf((String) data3[s][4]) * Float.valueOf((String) data3[s][2]);
                                     }
                                 }
                                 
-                                String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount) + "," + data3[m][8];
-                                buffer3.append(to_append);
-                                writer3.write(buffer3.toString() + "\r\n");
+                                if (Math.abs(finalamount - 0) > epsilon){
+                                    String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + data3[m][7] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount) + "," + data3[m][9];
+                                    buffer3.append(to_append);
+                                    writer3.write(buffer3.toString() + "\r\n");
+                                }
                             }
                         } else {
                             for (int s = 1; s < data3.length; s++){
                                 float curr_strike = Float.valueOf((String) data3[s][3]);
                                 boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
                                 
-                                boolean matching = (data3[m][1].equals(data3[s][1]) && compare && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][8].equals(data3[s][8]));
+                                boolean matching = (data3[m][1].equals(data3[s][1]) && compare && data3[m][5].equals(data3[s][5]) && data3[m][6].equals(data3[s][6]) && data3[m][7].equals(data3[s][7]) && data3[m][9].equals(data3[s][9]));
 
                                 if (matching){
                                     finalamount =  finalamount + Float.valueOf((String) data3[s][2]);
                                     averaged_price = averaged_price + Float.valueOf((String) data3[s][4]) * Float.valueOf((String) data3[s][2]);
                                 }
                             }
-                            String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount) + "," + data3[m][8];
-                            buffer3.append(to_append);
-                            writer3.write(buffer3.toString() + "\r\n");
+                            if (Math.abs(finalamount - 0) > epsilon){
+                                String to_append = dateFormat2.format(date2) + "," + data3[m][1] + "," + data3[m][3] + "," + data3[m][5] + "," + data3[m][6] + "," + data3[m][7] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount) + "," + data3[m][9];
+                                buffer3.append(to_append);
+                                writer3.write(buffer3.toString() + "\r\n");
+                            }
                         }
                     }
                 }
