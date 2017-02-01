@@ -1185,7 +1185,6 @@ public class account_manager_frame extends javax.swing.JFrame {
             }
             writer.write(bufferHeader.toString() + "\r\n");
             
-            
             for (int m = 0; m < data.length; m++){
                 StringBuffer buffer = new StringBuffer();
                 if (Float.valueOf((String) data[m][2])!= 0.0){
