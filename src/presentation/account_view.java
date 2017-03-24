@@ -64,7 +64,7 @@ public class account_view extends javax.swing.JFrame {
                 i++;
                 line = br.readLine();
             }
-            
+            br.close();
             jTable1.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);

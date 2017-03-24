@@ -91,6 +91,60 @@ public class report_view extends javax.swing.JFrame {
         
     };
     
+    public void load_norm_hedg_aggregated_table(String dir) throws IOException{
+                  
+        BufferedReader br = null;
+        
+        String[] columnNames = new String[0];
+        Object[][] data = new Object[0][0];
+        String line = "";
+        String splitSign = ",";
+        
+        File folder = new File(dir);
+        File[] listOfFiles = folder.listFiles();
+        String file = null;
+        String filename = null;
+        
+        for (int i = 0; i < listOfFiles.length; i++){
+            
+            if (listOfFiles[i].getName().contains(".csv")) {
+                file = listOfFiles[i].getPath();
+                filename = listOfFiles[i].getName();
+                break;
+            }
+        }
+                  
+        int i = 0;
+        br = new BufferedReader(new FileReader(file));
+                    
+        while (br.readLine() != null) {
+            i++;
+        }
+        br.close();
+        data = new Object[i - 1][];
+        i = 0;
+        br = new BufferedReader(new FileReader(file));
+        line = br.readLine();
+        columnNames = line.split(splitSign);
+                                    
+        line = br.readLine();
+        while (line != null) {
+            data[i] = new Object[line.split(splitSign).length];
+
+            for (int j = 0; j < data[i].length; j++) {
+                data[i][j] = line.split(splitSign)[j];
+            }
+            i++;
+             line = br.readLine();
+        }
+        
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+        jTable1.setRowSorter(sorter);
+        
+    };
+
     public void load_account_names(){
         
         try {
@@ -155,7 +209,9 @@ public class report_view extends javax.swing.JFrame {
             
             
             ArrayList<String> account_names = new ArrayList<String>();
-            account_names.add("ALL");            
+            account_names.add("ALL");
+            account_names.add("ALL_normal");
+            account_names.add("ALL_hedged");             
             
             for (int m = 0; m < data_acc2.length; m++){
                 String account_info = (String) data_acc2[m][0];
@@ -229,6 +285,12 @@ public class report_view extends javax.swing.JFrame {
             }
         });
 
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+
         jButton2.setText("Search");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -281,22 +343,41 @@ public class report_view extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         
         String account_to_view = String.valueOf(jComboBox1.getSelectedItem());
-        
-        if (!account_to_view.equals("ALL")) {
+        String homedirec = System.getProperty("user.home");
+        String hedged_aggregated_reports = homedirec + "/carbide/Combined_Data_Entry/all_aggregated_accounts/hedged_aggregated_accounts";
+        String normal_aggregated_reports = homedirec + "/carbide/Combined_Data_Entry/all_aggregated_accounts/normal_aggregated_accounts";
+
+        if (account_to_view.equals("ALL")) {
             try {
-                load_separate_aggregation(account_to_view);
+                load_combined_aggregated_table();
+            } catch (IOException ex) {
+                Logger.getLogger(report_view.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if(account_to_view.equals("ALL_hedged")) {
+            try {
+                load_norm_hedg_aggregated_table(hedged_aggregated_reports);
+            } catch (IOException ex) {
+                Logger.getLogger(report_view.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if(account_to_view.equals("ALL_normal")) {
+            try {
+                load_norm_hedg_aggregated_table(normal_aggregated_reports);
             } catch (IOException ex) {
                 Logger.getLogger(report_view.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             try {
-                load_combined_aggregated_table();
+                load_separate_aggregation(account_to_view);
             } catch (IOException ex) {
                 Logger.getLogger(report_view.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
 
     public void load_separate_aggregation(String account_name) throws IOException{
         String homedirec = System.getProperty("user.home");

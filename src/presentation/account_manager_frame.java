@@ -450,7 +450,6 @@ public class account_manager_frame extends javax.swing.JFrame {
             cleancombinedfiles();
             
             
-            
         } catch (IOException ex) {
             Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1334,9 +1333,124 @@ public class account_manager_frame extends javax.swing.JFrame {
                 }
                 
             }
+            
             writer2.close();
             
             
+            
+            String normal_all_aggregated_dir = all_aggregated_dir + "/normal_aggregated_accounts";
+            String hedged_all_aggregated_dir = all_aggregated_dir + "/hedged_aggregated_accounts";
+            
+            File normal_all_aggregated_folder = new File(normal_all_aggregated_dir);
+            if (!normal_all_aggregated_folder.exists()) {
+                        new File(normal_all_aggregated_dir).mkdir();
+            } else {
+                String[] normal_all_aggregate_fileList = normal_all_aggregated_folder.list();
+                String previous_normal_all_aggreate_files = "";
+                for(String name:normal_all_aggregate_fileList){
+                    if (name.contains(".csv")){
+                        normal_all_aggregated_dir = all_aggregated_dir + "/normal_aggregated_accounts";
+                        previous_normal_all_aggreate_files = normal_all_aggregated_dir + "/" + name;
+                        File normal_all_agg_file_to_delete = new File(previous_normal_all_aggreate_files);
+                        normal_all_agg_file_to_delete.delete();
+                    }
+                }
+            }
+            
+            File hedged_all_aggregated_folder = new File(hedged_all_aggregated_dir);
+            if (!hedged_all_aggregated_folder.exists()) {
+                        new File(hedged_all_aggregated_dir).mkdir();
+            } else {
+                String[] hedged_all_aggregate_fileList = hedged_all_aggregated_folder.list();
+                String previous_hedged_all_aggreate_files = "";
+                for(String name:hedged_all_aggregate_fileList){
+                    if (name.contains(".csv")){
+                        hedged_all_aggregated_dir = all_aggregated_dir + "/hedged_aggregated_accounts";
+                        previous_hedged_all_aggreate_files = hedged_all_aggregated_dir + "/" + name;
+                        File hedged_all_agg_file_to_delete = new File(previous_hedged_all_aggreate_files);
+                        hedged_all_agg_file_to_delete.delete();
+                    }
+                }
+            }
+            
+            
+            String normal_all_aggregated = normal_all_aggregated_dir + "/" + "normal-" + dateFormat2.format(date2) +"-aggregated.csv";
+            String hedged_all_aggregated = hedged_all_aggregated_dir + "/" + "hedged-" + dateFormat2.format(date2) +"-aggregated.csv";
+
+            Writer normal_writer = null;
+            normal_writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(normal_all_aggregated), "utf-8"));
+
+            StringBuffer normal_bufferHeader2 = new StringBuffer();
+            
+            normal_bufferHeader2.append("Date,Symbol,Strike,Type,Expiry,Month,Amount,Price");
+            normal_writer.write(normal_bufferHeader2.toString() + "\r\n");
+            
+            Writer hedged_writer = null;
+            hedged_writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(hedged_all_aggregated), "utf-8"));
+
+            StringBuffer hedged_bufferHeader2 = new StringBuffer();
+            
+            hedged_bufferHeader2.append("Date,Symbol,Strike,Type,Expiry,Month,Amount,Price");
+            hedged_writer.write(hedged_bufferHeader2.toString() + "\r\n");
+
+
+            //reading hedging account information
+            String hedged_account_information = homedirec + "/carbide/accounts/accounts_hedge.csv";
+            
+            BufferedReader hedged_br = null;
+
+            String[] hedged_columnNames = new String[0];
+            Object[][] hedged_acc_data = new Object[0][0];
+            String hedged_line = "";
+
+            int ii = 0;
+            hedged_br = new BufferedReader(new FileReader(hedged_account_information));
+
+            while (hedged_br.readLine() != null) {
+                ii++;
+            }
+            hedged_br.close();
+            
+            hedged_acc_data = new Object[ii - 1][];
+            ii = 0;
+            hedged_br = new BufferedReader(new FileReader(hedged_account_information));
+            hedged_line = hedged_br.readLine();
+            hedged_columnNames = hedged_line.split(splitSign);
+
+            hedged_line = hedged_br.readLine();
+                        
+            while (hedged_line != null) {
+                hedged_acc_data[ii] = new Object[hedged_line.split(splitSign).length];
+                for (int jj = 0; jj < hedged_acc_data[ii].length; jj++) {
+                    hedged_acc_data[ii][jj] = hedged_line.split(splitSign)[jj];
+                }
+                
+                ii++;
+                hedged_line = hedged_br.readLine();
+            }
+            hedged_br.close();
+            
+            
+            
+            
+            Object hedged_data = sHedgeobj(data3, hedged_acc_data);
+            
+            if (hedged_data != null){
+                aggregation((Object[][]) hedged_data, hedged_all_aggregated);
+            }
+            
+            Object normal_data = sNormalobj(data3, hedged_acc_data);
+            
+            if (normal_data != null){
+                aggregation((Object[][]) normal_data, normal_all_aggregated);
+            }
+            
+            
+            normal_writer.close();
+            hedged_writer.close();
+            
+            
+
             
             ///separate_aggregation
             String separate_aggregated_dir = dataentry_path + "/separate_aggregated_accounts";
@@ -1461,7 +1575,199 @@ public class account_manager_frame extends javax.swing.JFrame {
     }
     
     
+    public static void aggregation(Object[][] data, String file_dirc) throws IOException{
+        
+        Writer writer2 = null;
+        writer2 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file_dirc), "utf-8"));
+
+        StringBuffer bufferHeader2 = new StringBuffer();
+                        
+            
+        bufferHeader2.append("Date,Symbol,Strike,Type,Expiry,Month,Amount,Price");
+        writer2.write(bufferHeader2.toString() + "\r\n");
+        
+        float epsilon = (float) 0.00001;
+        DecimalFormat df = new DecimalFormat("#.####");
+        df.setRoundingMode(RoundingMode.CEILING);
+        
+        DateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd");
+        Date date2 = new Date();
+        
+        for (int m = 0; m < data.length; m++){
+            
+            float finalamount = Float.valueOf((String) data[m][2]);
+            float averaged_price = Float.valueOf((String) data[m][4]) * finalamount;
+            StringBuffer buffer2 = new StringBuffer();
+            float prev_strike = Float.valueOf((String) data[m][3]);
+                
+            if ( m != 0){
+                boolean existed = false;
+
+                for (int q = m - 1; q > -1; q--){
+
+                    float curr_strike = Float.valueOf((String) data[q][3]);
+                    boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
+
+                    boolean matching = (data[m][1].equals(data[q][1]) && compare && data[m][5].equals(data[q][5]) && data[m][6].equals(data[q][6]) && data[m][7].equals(data[q][7]));               
+
+                    if(matching){
+                        existed = true;
+                    }
+
+                }
+
+                if (!existed){
+                    for (int p = m + 1; p < data.length; p++){
+                        float curr_strike = Float.valueOf((String) data[p][3]);
+                        boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
+
+                        boolean matching = (data[m][1].equals(data[p][1]) && compare && data[m][5].equals(data[p][5]) && data[m][6].equals(data[p][6]) && data[m][7].equals(data[p][7]));
+                        if (matching){
+                            finalamount =  finalamount + Float.valueOf((String) data[p][2]);
+                            averaged_price = averaged_price + Float.valueOf((String) data[p][4]) * Float.valueOf((String) data[p][2]);
+
+                        }
+                    }
+
+                    if (Math.abs(finalamount - 0) > epsilon){
+                        String to_append = dateFormat2.format(date2) + "," + data[m][1] + "," + data[m][3] + "," + data[m][5] + "," + data[m][6] + "," + data[m][7] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount);
+                        buffer2.append(to_append);
+                        writer2.write(buffer2.toString() + "\r\n");
+                    };
+                }
+
+            } else {
+                for (int p = 1; p < data.length; p++){
+
+                    float curr_strike = Float.valueOf((String) data[p][3]);
+                    boolean compare = (Math.abs(curr_strike - prev_strike) < epsilon);
+
+                    boolean matching = (data[m][1].equals(data[p][1]) && compare && data[m][5].equals(data[p][5]) && data[m][6].equals(data[p][6]) && data[m][7].equals(data[p][7]));
+
+                    if (matching){
+                        finalamount =  finalamount + Float.valueOf((String) data[p][2]);
+                        averaged_price = averaged_price + Float.valueOf((String) data[p][4]) * Float.valueOf((String) data[p][2]);
+                    }
+                }
+                if (Math.abs(finalamount - 0) > epsilon){
+                    String to_append = dateFormat2.format(date2) + "," + data[m][1] + "," + data[m][3] + "," + data[m][5] + "," + data[m][6] + "," + data[m][7] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount);
+                    buffer2.append(to_append);
+                    writer2.write(buffer2.toString() + "\r\n");
+                }
+            }
+
+        }
+        
+        writer2.close();
+        
+    }
     
+    public static Object[][] sHedgeobj(Object[][] data, Object[][] hedge_acc) {
+        int num = 0;
+        String spliting = "-";
+        
+        for (int i=0; i < data.length; i++){
+            String current_account = data[i][9].toString();
+            
+            for (int p=0; p < hedge_acc.length; p++){
+                String curr_first = hedge_acc[p][0].toString();
+                String curr_sec = hedge_acc[p][1].toString();
+                
+                String first = current_account.split(spliting)[0];
+                String second = current_account.split(spliting)[1];
+
+                if ((first.equals(curr_first)) && (second.equals(curr_sec))){
+                    num ++;
+                }
+            }
+        }
+        
+        if (num == 0){
+            return null;
+        } else {
+            Object[][] hedged_data = new Object[num-1][data[0].length];
+            
+            int num1 = 0;
+            
+            for (int i=0; i < data.length; i++){
+                String current_account = data[i][9].toString();
+            
+                for (int p=0; p < hedge_acc.length; p++){
+                    String curr_first = hedge_acc[p][0].toString();
+                    String curr_sec = hedge_acc[p][1].toString();
+
+                    String first = current_account.split(spliting)[0];
+                    String second = current_account.split(spliting)[1];
+
+                    if (first.equals(curr_first) && second.equals(curr_sec)){                    
+                        for (int j=0; j < data[i].length; j++){
+                            hedged_data[num1][j] = data[i][j];
+                        }
+                        num1++;
+                    }
+                }
+            }
+        
+            return hedged_data;
+        }
+       
+    }
+    
+    public static Object sNormalobj(Object[][] data, Object[][] hedge_acc) {
+        int num = 0;
+        String spliting = "-";
+        
+        for (int i=0; i < data.length; i++){
+            String current_account = data[i][9].toString();
+            
+            for (int p=0; p < hedge_acc.length; p++){
+                String curr_first = hedge_acc[p][0].toString();
+                String curr_sec = hedge_acc[p][1].toString();
+                
+                String first = current_account.split(spliting)[0];
+                String second = current_account.split(spliting)[1];
+
+                if (!((first.equals(curr_first)) && (second.equals(curr_sec)))){
+                    num ++;
+                }
+            }
+        }
+
+        if (num == 0){
+            return null;
+        } else {
+            Object[][] hedged_data = new Object[num][10];
+            
+            int num1 = 0;
+            
+            for (int i=0; i < data.length; i++){
+                String current_account = data[i][9].toString();
+            
+                for (int p=0; p < hedge_acc.length; p++){
+                    String curr_first = hedge_acc[p][0].toString();
+                    String curr_sec = hedge_acc[p][1].toString();
+
+                    String first = current_account.split(spliting)[0];
+                    String second = current_account.split(spliting)[1];
+                    
+
+                    if (!((first.equals(curr_first)) && (second.equals(curr_sec)))){
+                        for (int j=0; j < data[i].length; j++){
+                            
+                            hedged_data[num1][j] = data[i][j];
+                        
+                        }
+                        
+                        num1++;
+                    
+                    }
+                }
+            }
+        
+            return hedged_data;
+        }
+
+    }
     
     public static void deleteFolder(File folder) {
         File[] files = folder.listFiles();
