@@ -1637,6 +1637,7 @@ public class account_manager_frame extends javax.swing.JFrame {
                 }
 
             } else {
+                
                 for (int p = 1; p < data.length; p++){
 
                     float curr_strike = Float.valueOf((String) data[p][3]);
@@ -1649,6 +1650,7 @@ public class account_manager_frame extends javax.swing.JFrame {
                         averaged_price = averaged_price + Float.valueOf((String) data[p][4]) * Float.valueOf((String) data[p][2]);
                     }
                 }
+
                 if (Math.abs(finalamount - 0) > epsilon){
                     String to_append = dateFormat2.format(date2) + "," + data[m][1] + "," + data[m][3] + "," + data[m][5] + "," + data[m][6] + "," + data[m][7] + "," + Float.toString(finalamount) + "," + df.format(averaged_price/finalamount);
                     buffer2.append(to_append);
@@ -1681,11 +1683,12 @@ public class account_manager_frame extends javax.swing.JFrame {
                 }
             }
         }
-        
+            
         if (num == 0){
             return null;
         } else {
-            Object[][] hedged_data = new Object[num-1][data[0].length];
+            
+            Object[][] hedged_data = new Object[num][data[0].length];
             
             int num1 = 0;
             
