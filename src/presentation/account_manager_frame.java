@@ -1337,7 +1337,7 @@ public class account_manager_frame extends javax.swing.JFrame {
             writer2.close();
             
             
-            
+//            create hedge and normal aggreated accounts
             String normal_all_aggregated_dir = all_aggregated_dir + "/normal_aggregated_accounts";
             String hedged_all_aggregated_dir = all_aggregated_dir + "/hedged_aggregated_accounts";
             
@@ -1430,16 +1430,61 @@ public class account_manager_frame extends javax.swing.JFrame {
             }
             hedged_br.close();
             
+            // reading absolute account information 
+            String normal_account_information = homedirec + "/carbide/accounts/accounts.csv";
+            
+            BufferedReader normal_br = null;
+
+            String[] normal_columnNames = new String[0];
+            Object[][] normal_acc_data = new Object[0][0];
+            String normal_line = "";
+
+            int pp = 0;
+            normal_br = new BufferedReader(new FileReader(normal_account_information));
+
+            while (normal_br.readLine() != null) {
+                pp++;
+            }
+            normal_br.close();
+            
+            normal_acc_data = new Object[pp - 1][];
+            pp = 0;
+            normal_br = new BufferedReader(new FileReader(normal_account_information));
+            normal_line = normal_br.readLine();
+            normal_columnNames = normal_line.split(splitSign);
+
+            normal_line = normal_br.readLine();
+                        
+            while (normal_line != null) {
+                normal_acc_data[pp] = new Object[normal_line.split(splitSign).length];
+                for (int qq = 0; qq < normal_acc_data[pp].length; qq++) {
+                    normal_acc_data[pp][qq] = normal_line.split(splitSign)[qq];
+                }
+                
+                pp++;
+                normal_line = normal_br.readLine();
+            }
+            normal_br.close();
             
             
+//            for debugging
+//            System.out.println(hedged_acc_data.length);
             
+//            for (Object[] hedged_acc_data1 : hedged_acc_data) {
+//                for (int j = 0; j < hedged_acc_data1.length; j++) {
+//                    System.out.println(hedged_acc_data1[j]);
+//                }
+//            }
+            
+
+
             Object hedged_data = sHedgeobj(data3, hedged_acc_data);
             
             if (hedged_data != null){
                 aggregation((Object[][]) hedged_data, hedged_all_aggregated);
             }
             
-            Object normal_data = sNormalobj(data3, hedged_acc_data);
+            Object normal_data = sNormalobj(data3, normal_acc_data);
             
             if (normal_data != null){
                 aggregation((Object[][]) normal_data, normal_all_aggregated);
@@ -1729,8 +1774,8 @@ public class account_manager_frame extends javax.swing.JFrame {
                 
                 String first = current_account.split(spliting)[0];
                 String second = current_account.split(spliting)[1];
-
-                if (!((first.equals(curr_first)) && (second.equals(curr_sec)))){
+                
+                if (((first.equals(curr_first)) && (second.equals(curr_sec)))){
                     num ++;
                 }
             }
@@ -1754,7 +1799,7 @@ public class account_manager_frame extends javax.swing.JFrame {
                     String second = current_account.split(spliting)[1];
                     
 
-                    if (!((first.equals(curr_first)) && (second.equals(curr_sec)))){
+                    if (((first.equals(curr_first)) && (second.equals(curr_sec)))){
                         for (int j=0; j < data[i].length; j++){
                             
                             hedged_data[num1][j] = data[i][j];
