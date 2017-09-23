@@ -21,6 +21,7 @@ import java.math.RoundingMode;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +37,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.bouncycastle.util.test.Test;
+import static presentation.data_entry.writeToCSV;
 
 /**
  *
@@ -78,6 +80,7 @@ public class account_manager_frame extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -129,6 +132,13 @@ public class account_manager_frame extends javax.swing.JFrame {
         });
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/carbide.jpg"))); // NOI18N
+
+        jButton3.setText("Back Up Entries");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jMenu1.setText("File");
 
@@ -239,23 +249,27 @@ public class account_manager_frame extends javax.swing.JFrame {
                         .addGap(40, 40, 40)
                         .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(49, 49, 49)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(40, 40, 40)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(46, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(32, 32, 32)
+                .addGap(18, 18, 18)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
                 .addComponent(jLabel1))
         );
 
@@ -418,8 +432,7 @@ public class account_manager_frame extends javax.swing.JFrame {
         String homedirec = System.getProperty("user.home");
         String dataentry_path = homedirec + "/carbide/Combined_Data_Entry";
         String primary_dataentry_path = homedirec + "/carbide/Data_Entry";
-
-
+        
         File folder = new File(primary_dataentry_path);
         File[] listOfFiles = folder.listFiles();
 
@@ -932,6 +945,53 @@ public class account_manager_frame extends javax.swing.JFrame {
         allocation_weights.setVisible(true);
         allocation_weights.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }//GEN-LAST:event_jMenuItem12ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        
+        String homedirec = System.getProperty("user.home");
+        String backup_path = homedirec + "/carbide/Back_ups";
+        String primary_dataentry_path = homedirec + "/carbide/Data_Entry";
+                
+        // get the files in Data_Entry
+        File folder = new File(primary_dataentry_path);
+        File[] listOfFiles = folder.listFiles();
+        
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        String current_date = dateFormat.format(date);
+        current_date = current_date.substring(0,current_date.length()-2);
+        current_date = current_date + "01";
+        
+        if (!(new File(backup_path).exists())) {
+            new File(backup_path).mkdir();
+        }
+              
+        for (int i = 0; i < listOfFiles.length; i++) {
+            File current_file = listOfFiles[i];
+            String current_file_name = listOfFiles[i].getName();
+            
+            if (current_file_name.length() >= 10){
+                try {
+                    String current_file_date = current_file_name.substring(0, 10);
+                    Date date_current_file_date = dateFormat.parse(current_file_date);
+                    Date date_current_date = dateFormat.parse(current_date);
+
+                    if (date_current_file_date.before(date_current_date)){
+                        String backup_filename = backup_path + "/" + current_file_name;
+                        File backup_file_path = new File(backup_filename);
+
+                        current_file.renameTo(backup_file_path);
+  
+                    }
+
+                } catch (ParseException ex) {
+                    Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+        }
+        
+    }//GEN-LAST:event_jButton3ActionPerformed
     
     public void merge_csv(String combined_entry) throws FileNotFoundException, IOException{
         
@@ -1835,6 +1895,7 @@ public class account_manager_frame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
