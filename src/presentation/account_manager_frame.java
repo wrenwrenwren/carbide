@@ -5,6 +5,7 @@
  */
 package presentation;
 
+import java.awt.List;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,6 +25,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -428,15 +430,24 @@ public class account_manager_frame extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         
-        
         String homedirec = System.getProperty("user.home");
         String dataentry_path = homedirec + "/carbide/Combined_Data_Entry";
         String primary_dataentry_path = homedirec + "/carbide/Data_Entry";
         
         File folder = new File(primary_dataentry_path);
         File[] listOfFiles = folder.listFiles();
-
-        if (listOfFiles.length == 0){
+        
+        int numFile = 0;
+        
+        for (int i=0; i < listOfFiles.length; i++){
+            
+            String currentfilenames = listOfFiles[i].getName();
+            if (currentfilenames.endsWith(".csv")){
+                numFile++;
+            }
+        }
+                
+        if (numFile == 0){
             JFrame error_frame = new JFrame();
             JOptionPane.showMessageDialog(error_frame, "No Data Entry files!", "Error!",JOptionPane.ERROR_MESSAGE);
         } else {
@@ -456,17 +467,16 @@ public class account_manager_frame extends javax.swing.JFrame {
                     Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
+            
+            try {    
+                cleancombinedfiles();
+                
+            } catch (IOException ex) {
+                Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
             
-        try {    
-            cleancombinedfiles();
-            
-            
-        } catch (IOException ex) {
-            Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
@@ -951,6 +961,7 @@ public class account_manager_frame extends javax.swing.JFrame {
         String homedirec = System.getProperty("user.home");
         String backup_path = homedirec + "/carbide/Back_ups";
         String primary_dataentry_path = homedirec + "/carbide/Data_Entry";
+        String primary_combined_path = homedirec + "/carbide/Combined_Data_Entry";
                 
         // get the files in Data_Entry
         File folder = new File(primary_dataentry_path);
@@ -977,10 +988,10 @@ public class account_manager_frame extends javax.swing.JFrame {
                     Date date_current_date = dateFormat.parse(current_date);
 
                     if (date_current_file_date.before(date_current_date)){
-                        String backup_filename = backup_path + "/" + current_file_name;
-                        File backup_file_path = new File(backup_filename);
+//                        String backup_filename = backup_path + "/" + current_file_name;
+//                        File backup_file_path = new File(backup_filename);
 
-                        current_file.renameTo(backup_file_path);
+                        current_file.delete();
   
                     }
 
@@ -990,6 +1001,44 @@ public class account_manager_frame extends javax.swing.JFrame {
 
             }
         }
+        
+        // backup combined file
+        File folder2 = new File(primary_combined_path);
+        File[] listOfFiles2 = folder2.listFiles();
+        
+        for (int j = 0; j < listOfFiles2.length; j++) {
+            
+            File current_file2 = listOfFiles2[j];
+            String current_file_name2 = listOfFiles2[j].getName();
+            
+            if (current_file_name2.endsWith("-combined.csv")){
+                
+                try {
+                    String current_file_date2 = current_file_name2.substring(0, 10);
+                    Date date_current_file_date2 = dateFormat.parse(current_file_date2);
+                    Date date_current_date = dateFormat.parse(current_date);
+                    
+                    if (date_current_file_date2.before(date_current_date)){
+                        String backup_filename = backup_path + "/" + current_file_name2;
+                        File backup_file_path = new File(backup_filename);
+
+                        current_file2.renameTo(backup_file_path);
+
+                    }
+                } catch (ParseException ex) {
+                    Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+
+            }
+
+        }
+
+        
+        
+        
+        
+        
         
     }//GEN-LAST:event_jButton3ActionPerformed
     
