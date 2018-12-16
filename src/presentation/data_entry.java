@@ -138,7 +138,7 @@ public class data_entry extends javax.swing.JFrame {
 
         jLabel10.setText("Strategy:");
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Absolute", "Hedge" }));
+        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Absolute", "Hedge", "Macro" }));
         jComboBox3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox3ActionPerformed(evt);
@@ -343,8 +343,10 @@ public class data_entry extends javax.swing.JFrame {
                     
                     if (to_select.equals("Absolute")){
                         account_weights_direc = homedirec + "/carbide/accounts/account_weights.csv";
-                    } else {
+                    } else if (to_select.equals("Hedge")) {
                         account_weights_direc = homedirec + "/carbide/accounts/account_weights_hedge.csv";
+                    } else if (to_select.equals("Macro")) {
+                        account_weights_direc = homedirec + "/carbide/accounts/account_weights_macro.csv";
                     }
 
                     BufferedReader br = null;
@@ -454,8 +456,10 @@ public class data_entry extends javax.swing.JFrame {
 
         if (to_select.equals("Absolute")){
             load_account_names();
-        } else {
+        } else if (to_select.equals("Hedge")) {
             load_account_names_hedge();
+        } else if (to_select.equals("Macro")) {
+            load_account_names_macro();
         }
     }//GEN-LAST:event_jComboBox3ActionPerformed
 
@@ -688,6 +692,59 @@ public class data_entry extends javax.swing.JFrame {
         try {
             String homedirec = System.getProperty("user.home");
             String account_name_direc = homedirec + "/carbide/accounts/accounts_hedge.csv";
+            
+            BufferedReader br_acc = null;
+
+            Object[][] data_acc = new Object[0][0];
+            String line = "";
+            String splitSign = ",";
+
+            int p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc));
+
+            while (br_acc.readLine() != null) {
+                p++;
+            }
+            br_acc.close();
+            data_acc = new Object[p - 1][];
+            p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc));
+            line = br_acc.readLine();
+
+            line = br_acc.readLine();
+            while (line != null) {
+                data_acc[p] = new Object[line.split(splitSign).length];
+                 for (int j = 0; j < data_acc[p].length; j++) {
+                    data_acc[p][j] = line.split(splitSign)[j];
+                }
+                p++;
+                line = br_acc.readLine();
+            }
+            
+            ArrayList<String> account_names = new ArrayList<String>();
+            account_names.add("ALL");            
+            
+            for (int m = 0; m < data_acc.length; m++){
+                String account_info = (String) data_acc[m][0];
+                account_info = account_info + "-" + (String) data_acc[m][1];
+                account_names.add(account_info);
+            }
+ 
+            String[] accountarr = new String[account_names.size()];
+            accountarr = account_names.toArray(accountarr);
+            jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(accountarr));
+            
+        } catch (IOException ex) {
+            Logger.getLogger(data_entry.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    public void load_account_names_macro(){
+        
+        try {
+            String homedirec = System.getProperty("user.home");
+            String account_name_direc = homedirec + "/carbide/accounts/accounts_macro.csv";
             
             BufferedReader br_acc = null;
 

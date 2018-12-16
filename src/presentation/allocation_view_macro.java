@@ -31,12 +31,12 @@ import javax.swing.table.TableRowSorter;
  *
  * @author ren
  */
-public class allocation_view_hedge extends javax.swing.JFrame {
+public class allocation_view_macro extends javax.swing.JFrame {
 
     /**
      * Creates new form allocation_view
      */
-    public allocation_view_hedge() {
+    public allocation_view_macro() {
         initComponents();
         load_account_weights();
     }
@@ -44,9 +44,9 @@ public class allocation_view_hedge extends javax.swing.JFrame {
     public void load_account_weights(){
         try {
             String homedirec = System.getProperty("user.home");
-            String account_weights_direc = homedirec + "/carbide/accounts/account_weights_hedge.csv";
+            String account_weights_direc = homedirec + "/carbide/accounts/account_weights_macro.csv";
             
-            String account_name_direc = homedirec + "/carbide/accounts/accounts_hedge.csv";
+            String account_name_direc = homedirec + "/carbide/accounts/accounts_macro.csv";
             
             
 //            ArrayList<String> account_names = new ArrayList<String>();
@@ -357,7 +357,7 @@ public class allocation_view_hedge extends javax.swing.JFrame {
         try {
             writeCSVfile(jTable1);
         } catch (IOException | ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(allocation_view_hedge.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(allocation_view_macro.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         
@@ -383,7 +383,7 @@ public class allocation_view_hedge extends javax.swing.JFrame {
         int nCol = dtm.getColumnCount();
         
         String homedirec = System.getProperty("user.home");
-        String account_weights_direc = homedirec + "/carbide/accounts/account_weights_hedge.csv";
+        String account_weights_direc = homedirec + "/carbide/accounts/account_weights_macro.csv";
         new File(account_weights_direc).delete();
 
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(account_weights_direc), "utf-8"));

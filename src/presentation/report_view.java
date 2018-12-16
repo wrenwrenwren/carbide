@@ -10,6 +10,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -151,11 +155,13 @@ public class report_view extends javax.swing.JFrame {
             String homedirec = System.getProperty("user.home");
             String account_name_direc = homedirec + "/carbide/accounts/accounts_hedge.csv";
             String account_name_direc2 = homedirec + "/carbide/accounts/accounts.csv";
-            
+            String account_name_direc3 = homedirec + "/carbide/accounts/accounts_macro.csv";
+
             BufferedReader br_acc = null;
 
             Object[][] data_acc = new Object[0][0];
             Object[][] data_acc2 = new Object[0][0];
+            Object[][] data_acc3 = new Object[0][0];
             String line = "";
             String splitSign = ",";
 
@@ -177,6 +183,14 @@ public class report_view extends javax.swing.JFrame {
             br_acc.close();
             data_acc2 = new Object[p - 1][];
             
+            p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc3));
+
+            while (br_acc.readLine() != null) {
+                p++;
+            }
+            br_acc.close();
+            data_acc3 = new Object[p - 1][];
             
             p = 0;
             br_acc = new BufferedReader(new FileReader(account_name_direc));
@@ -207,36 +221,51 @@ public class report_view extends javax.swing.JFrame {
                 line = br_acc.readLine();
             }
             
+            p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc3));
+            line = br_acc.readLine();
+
+            line = br_acc.readLine();
+            while (line != null) {
+                data_acc3[p] = new Object[line.split(splitSign).length];
+                 for (int j = 0; j < data_acc3[p].length; j++) {
+                    data_acc3[p][j] = line.split(splitSign)[j];
+                }
+                p++;
+                line = br_acc.readLine();
+            }
+            
             
             ArrayList<String> account_names = new ArrayList<String>();
-            account_names.add("ALL");
-            account_names.add("ALL_normal");
-            account_names.add("ALL_hedged");             
             
+            for (int m = 0; m < data_acc3.length; m++){
+                String account_info = (String) data_acc3[m][0];
+                account_info = account_info + "-" + (String) data_acc3[m][1];
+                account_names.add(account_info);
+            }
+
             for (int m = 0; m < data_acc2.length; m++){
                 String account_info = (String) data_acc2[m][0];
                 account_info = account_info + "-" + (String) data_acc2[m][1];
                 account_names.add(account_info);
             }
-
+            
             for (int m = 0; m < data_acc.length; m++){
-                String account_info_toadd = (String) data_acc[m][0];
-                account_info_toadd = account_info_toadd + "-" + (String) data_acc[m][1];
-                Boolean existed = false;
-                
-                for (int n = 0; n < data_acc2.length; n++){
-                    String account_info_existed = (String) data_acc2[n][0];
-                    account_info_existed = account_info_existed + "-" + (String) data_acc2[n][1];
-                    if (account_info_toadd == account_info_existed) {
-                       existed = true; 
-                    }
-                }
-                
-                if (!existed){
-                    account_names.add(account_info_toadd);
-                }
+                String account_info = (String) data_acc[m][0];
+                account_info = account_info + "-" + (String) data_acc[m][1];
+                account_names.add(account_info);
             }
             
+            Set<String> set = new HashSet<>(account_names);
+            account_names.clear();
+            account_names.addAll(set);
+            Collections.sort(account_names);
+            
+            account_names.add(0, "ALL_macro");   
+            account_names.add(0, "ALL_hedged");             
+            account_names.add(0, "ALL_normal");             
+            account_names.add(0, "ALL");             
+
             String[] accountarr = new String[account_names.size()];
             accountarr = account_names.toArray(accountarr);
             jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(accountarr));
@@ -346,6 +375,7 @@ public class report_view extends javax.swing.JFrame {
         String homedirec = System.getProperty("user.home");
         String hedged_aggregated_reports = homedirec + "/carbide/Combined_Data_Entry/all_aggregated_accounts/hedged_aggregated_accounts";
         String normal_aggregated_reports = homedirec + "/carbide/Combined_Data_Entry/all_aggregated_accounts/normal_aggregated_accounts";
+        String macro_aggregated_reports = homedirec + "/carbide/Combined_Data_Entry/all_aggregated_accounts/macro_aggregated_accounts";
 
         if (account_to_view.equals("ALL")) {
             try {
@@ -362,6 +392,12 @@ public class report_view extends javax.swing.JFrame {
         } else if(account_to_view.equals("ALL_normal")) {
             try {
                 load_norm_hedg_aggregated_table(normal_aggregated_reports);
+            } catch (IOException ex) {
+                Logger.getLogger(report_view.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if(account_to_view.equals("ALL_macro")) {
+            try {
+                load_norm_hedg_aggregated_table(macro_aggregated_reports);
             } catch (IOException ex) {
                 Logger.getLogger(report_view.class.getName()).log(Level.SEVERE, null, ex);
             }

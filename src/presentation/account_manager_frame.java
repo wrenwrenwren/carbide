@@ -99,6 +99,12 @@ public class account_manager_frame extends javax.swing.JFrame {
         jMenuItem11 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem12 = new javax.swing.JMenuItem();
+        jMenu6 = new javax.swing.JMenu();
+        jMenuItem13 = new javax.swing.JMenuItem();
+        jMenuItem14 = new javax.swing.JMenuItem();
+        jMenuItem15 = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem16 = new javax.swing.JMenuItem();
 
         jMenuItem4.setText("jMenuItem4");
 
@@ -236,6 +242,43 @@ public class account_manager_frame extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu5);
 
+        jMenu6.setText("Macro Accounts");
+
+        jMenuItem13.setText("View Macro Accounts");
+        jMenuItem13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem13ActionPerformed(evt);
+            }
+        });
+        jMenu6.add(jMenuItem13);
+
+        jMenuItem14.setText("Add a New Macro Account");
+        jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem14ActionPerformed(evt);
+            }
+        });
+        jMenu6.add(jMenuItem14);
+
+        jMenuItem15.setText("Delete a Macro Account");
+        jMenuItem15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem15ActionPerformed(evt);
+            }
+        });
+        jMenu6.add(jMenuItem15);
+        jMenu6.add(jSeparator3);
+
+        jMenuItem16.setText("Allocation Weights ");
+        jMenuItem16.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem16ActionPerformed(evt);
+            }
+        });
+        jMenu6.add(jMenuItem16);
+
+        jMenuBar1.add(jMenu6);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -243,22 +286,14 @@ public class account_manager_frame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(85, 85, 85)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(49, 49, 49)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(46, Short.MAX_VALUE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(76, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -269,9 +304,9 @@ public class account_manager_frame extends javax.swing.JFrame {
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
+                .addGap(36, 36, 36)
                 .addComponent(jLabel1))
         );
 
@@ -1041,6 +1076,243 @@ public class account_manager_frame extends javax.swing.JFrame {
         
         
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jMenuItem13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem13ActionPerformed
+        
+        String account_name_direc = System.getProperty("user.home") + "/carbide/accounts/accounts_macro.csv";
+        account_view account = new account_view(account_name_direc);
+        account.setTitle("Macro Accounts");
+        account.setVisible(true);
+        account.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+    }//GEN-LAST:event_jMenuItem13ActionPerformed
+
+    private void jMenuItem15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem15ActionPerformed
+        
+        try {           
+            
+            String homedirec = System.getProperty("user.home");
+            String account_name_direc = homedirec + "/carbide/accounts/accounts_macro.csv";
+            
+            JFrame error_frame = new JFrame();
+
+            BufferedReader br_acc = null;
+
+            Object[][] data_acc = new Object[0][0];
+            String line = "";
+            String splitSign = ",";
+
+            int p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc));
+
+            while (br_acc.readLine() != null) {
+                p++;
+            }
+            br_acc.close();
+            data_acc = new Object[p - 1][];
+            p = 0;
+            br_acc = new BufferedReader(new FileReader(account_name_direc));
+            line = br_acc.readLine();
+
+            line = br_acc.readLine();
+            while (line != null) {
+                data_acc[p] = new Object[line.split(splitSign).length];
+                 for (int j = 0; j < data_acc[p].length; j++) {
+                    data_acc[p][j] = line.split(splitSign)[j];
+                }
+                p++;
+                line = br_acc.readLine();
+            }
+            
+            ArrayList<String> current_accounts = new ArrayList<String>();
+            for (int m = 0; m < data_acc.length; m++){
+                String account_info = (String) data_acc[m][0];
+                account_info = account_info + "," + (String) data_acc[m][1];
+                current_accounts.add(account_info);
+            }
+            Object[] current_account = current_accounts.toArray(new Object[current_accounts.size()]);
+            
+            String nametodelete = (String) JOptionPane.showInputDialog(null, "Macro Account to Delete:", "Delete a macro account", JOptionPane.QUESTION_MESSAGE, null, current_account, current_account[0]); 
+
+            if (nametodelete != null && ("".equals(nametodelete))) {
+                JOptionPane.showMessageDialog(error_frame, "Please input an account name. It can't be NULL.", "Error in Account Name!",JOptionPane.ERROR_MESSAGE);
+            } else if (nametodelete == null) {
+                JOptionPane.getRootFrame().dispose();   
+            } else {       
+                String[] fcm_account = nametodelete.split(",");
+                String fcm_name = fcm_account[0];
+                String account_name = fcm_account[1];
+                int existed = 0;
+                for (int m = 0; m < data_acc.length; m++){
+                        if (data_acc[m][0].equals(fcm_name) && data_acc[m][1].equals(account_name)){
+                            existed = m;
+                        }
+                    
+                }
+                if (existed != 0){
+                    Object[][] new_data_acc = new Object[data_acc.length - 1][2];
+                    int new_m = 0;
+                    loops:for (int m = 0; m < data_acc.length; m++){
+
+                        if (m == existed && existed != data_acc.length - 1){
+                            m++;
+                        } 
+
+                        
+                        for (int n = 0; n < data_acc[m].length; n++){
+                            new_data_acc[new_m][n] = data_acc[m][n];
+                        }
+                        
+                        new_m ++;
+                        
+                        if(new_m == data_acc.length - 1){
+                            break loops;
+                        }
+                    }
+                
+                    File f = new File(account_name_direc);
+                    f.delete();
+
+                    FileWriter writer = new FileWriter(account_name_direc);
+                    writer.write("FCM,Account Names" + System.lineSeparator());
+                    
+                    for (int m = 0; m < new_data_acc.length; m++){
+                        for (int n = 0; n < new_data_acc[m].length; n++){
+                            String to_write = null;
+                            if ( n == new_data_acc[m].length - 1){
+                                to_write = (String) new_data_acc[m][n];
+                                writer.write(to_write);
+                            } else {
+                                to_write = (String) new_data_acc[m][n];
+                                writer.write(to_write + ",");
+                            }
+                        }
+                        
+                        if ( m != new_data_acc.length){
+                                writer.write(System.lineSeparator());
+                        }
+                    }
+                
+                
+
+                writer.close();
+            
+
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+    }//GEN-LAST:event_jMenuItem15ActionPerformed
+
+    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
+        
+        try {
+            JFrame frame = new JFrame("Adding a new macro account");
+            String name = JOptionPane.showInputDialog(frame, "New Macro Account(Format: FCM,Account Name):");
+
+            
+            String homedirec = System.getProperty("user.home");
+            String account_name_direc = homedirec + "/carbide/accounts/accounts_macro.csv";
+            JFrame error_frame = new JFrame();
+            
+            if (name != null && ("".equals(name))) {
+                JOptionPane.showMessageDialog(error_frame, "Please input an account name. It can't be NULL.", "Error in Account Name!",JOptionPane.ERROR_MESSAGE);
+            } else if (name == null) {
+                JOptionPane.getRootFrame().dispose();   
+            } else {
+
+                String[] fcm_account = name.split(",");
+                String fcm_name = fcm_account[0];
+                String account_name = fcm_account[1];
+                BufferedReader br_acc = null;
+
+                Object[][] data_acc = new Object[0][0];
+                String line = "";
+                String splitSign = ",";
+
+                int p = 0;
+                br_acc = new BufferedReader(new FileReader(account_name_direc));
+
+                while (br_acc.readLine() != null) {
+                    p++;
+                }
+                br_acc.close();
+                data_acc = new Object[p - 1][];
+                p = 0;
+                br_acc = new BufferedReader(new FileReader(account_name_direc));
+                line = br_acc.readLine();
+
+                line = br_acc.readLine();
+                while (line != null) {
+                    data_acc[p] = new Object[line.split(splitSign).length];
+                    for (int j = 0; j < data_acc[p].length; j++) {
+                        data_acc[p][j] = line.split(splitSign)[j];
+                    }
+                    p++;
+                    line = br_acc.readLine();
+                }
+                
+                
+                boolean existed = false;
+                for (int m = 0; m < data_acc.length; m++){
+                        if (data_acc[m][0].equals(fcm_name) && data_acc[m][1].equals(account_name)){
+                            existed = true;
+                        }
+                }
+                
+                if (existed == false){
+                    Object[][] new_data_acc = new Object[data_acc.length + 1][2];
+                    
+                    for (int m = 0; m < data_acc.length; m++){
+                        for (int n = 0; n < data_acc[m].length; n++){
+                            new_data_acc[m][n] = data_acc[m][n];
+                        }
+                    }
+                    new_data_acc[data_acc.length][0] = fcm_name;
+                    new_data_acc[data_acc.length][1] = account_name;
+
+                    File f = new File(account_name_direc);
+                    f.delete();
+
+                    FileWriter writer = new FileWriter(account_name_direc);
+                    writer.write("FCM,Account Names" + System.lineSeparator());
+                    
+                    for (int m = 0; m < new_data_acc.length; m++){
+                        for (int n = 0; n < new_data_acc[m].length; n++){
+                            String to_write = null;
+                            if ( n == new_data_acc[m].length - 1){
+                                to_write = (String) new_data_acc[m][n];
+                                writer.write(to_write);
+                            } else {
+                                to_write = (String) new_data_acc[m][n];
+                                writer.write(to_write + ",");
+                            }
+                        }
+                        
+                        if ( m != new_data_acc.length){
+                                writer.write(System.lineSeparator());
+                        }
+                    }
+                    
+                    writer.close();
+                } else {
+                    JOptionPane.showMessageDialog(error_frame, "Account name existed!", "Error in Account Name!",JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(account_manager_frame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+                
+    }//GEN-LAST:event_jMenuItem14ActionPerformed
+
+    private void jMenuItem16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem16ActionPerformed
+        allocation_view_macro allocation_weights = new allocation_view_macro();
+        allocation_weights.setTitle("Macro Accounht Allocation Weight");
+        allocation_weights.setVisible(true);
+        allocation_weights.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }//GEN-LAST:event_jMenuItem16ActionPerformed
     
     public void merge_csv(String combined_entry) throws FileNotFoundException, IOException{
         
@@ -1449,7 +1721,8 @@ public class account_manager_frame extends javax.swing.JFrame {
 //            create hedge and normal aggreated accounts
             String normal_all_aggregated_dir = all_aggregated_dir + "/normal_aggregated_accounts";
             String hedged_all_aggregated_dir = all_aggregated_dir + "/hedged_aggregated_accounts";
-            
+            String macro_all_aggregated_dir = all_aggregated_dir + "/macro_aggregated_accounts";
+
             File normal_all_aggregated_folder = new File(normal_all_aggregated_dir);
             if (!normal_all_aggregated_folder.exists()) {
                         new File(normal_all_aggregated_dir).mkdir();
@@ -1482,9 +1755,26 @@ public class account_manager_frame extends javax.swing.JFrame {
                 }
             }
             
+            File macro_all_aggregated_folder = new File(macro_all_aggregated_dir);
+            if (!macro_all_aggregated_folder.exists()) {
+                        new File(macro_all_aggregated_dir).mkdir();
+            } else {
+                String[] macro_all_aggregate_fileList = macro_all_aggregated_folder.list();
+                String previous_macro_all_aggreate_files = "";
+                for(String name:macro_all_aggregate_fileList){
+                    if (name.contains(".csv")){
+                        macro_all_aggregated_dir = all_aggregated_dir + "/macro_aggregated_accounts";
+                        previous_macro_all_aggreate_files = macro_all_aggregated_dir + "/" + name;
+                        File macro_all_agg_file_to_delete = new File(previous_macro_all_aggreate_files);
+                        macro_all_agg_file_to_delete.delete();
+                    }
+                }
+            }
+            
             
             String normal_all_aggregated = normal_all_aggregated_dir + "/" + "normal-" + dateFormat2.format(date2) +"-aggregated.csv";
             String hedged_all_aggregated = hedged_all_aggregated_dir + "/" + "hedged-" + dateFormat2.format(date2) +"-aggregated.csv";
+            String macro_all_aggregated = macro_all_aggregated_dir + "/" + "macro-" + dateFormat2.format(date2) +"-aggregated.csv";
 
             Writer normal_writer = null;
             normal_writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(normal_all_aggregated), "utf-8"));
@@ -1501,7 +1791,52 @@ public class account_manager_frame extends javax.swing.JFrame {
             
             hedged_bufferHeader2.append("Date,Symbol,Strike,Type,Expiry,Month,Amount,Price");
             hedged_writer.write(hedged_bufferHeader2.toString() + "\r\n");
+            
+            Writer macro_writer = null;
+            macro_writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(macro_all_aggregated), "utf-8"));
 
+            StringBuffer macro_bufferHeader2 = new StringBuffer();
+            
+            macro_bufferHeader2.append("Date,Symbol,Strike,Type,Expiry,Month,Amount,Price");
+            macro_writer.write(macro_bufferHeader2.toString() + "\r\n");
+            
+            
+            //reading macro account information
+            String macro_account_information = homedirec + "/carbide/accounts/accounts_macro.csv";
+            
+            BufferedReader macro_br = null;
+
+            String[] macro_columnNames = new String[0];
+            Object[][] macro_acc_data = new Object[0][0];
+            String macro_line = "";
+
+            int zz = 0;
+            macro_br = new BufferedReader(new FileReader(macro_account_information));
+
+            while (macro_br.readLine() != null) {
+                zz++;
+            }
+            macro_br.close();
+            
+            macro_acc_data = new Object[zz - 1][];
+            zz = 0;
+            macro_br = new BufferedReader(new FileReader(macro_account_information));
+            macro_line = macro_br.readLine();
+            macro_columnNames = macro_line.split(splitSign);
+
+            macro_line = macro_br.readLine();
+                        
+            while (macro_line != null) {
+                macro_acc_data[zz] = new Object[macro_line.split(splitSign).length];
+                for (int jj = 0; jj < macro_acc_data[zz].length; jj++) {
+                    macro_acc_data[zz][jj] = macro_line.split(splitSign)[jj];
+                }
+                
+                zz++;
+                macro_line = macro_br.readLine();
+            }
+            macro_br.close();
+            
 
             //reading hedging account information
             String hedged_account_information = homedirec + "/carbide/accounts/accounts_hedge.csv";
@@ -1599,11 +1934,17 @@ public class account_manager_frame extends javax.swing.JFrame {
                 aggregation((Object[][]) normal_data, normal_all_aggregated);
             }
             
+            Object macro_data = sNormalobj(data3, macro_acc_data);
+            
+            if (macro_data != null){
+                aggregation((Object[][]) macro_data, macro_all_aggregated);
+            }
+            
+            
             
             normal_writer.close();
             hedged_writer.close();
-            
-            
+            macro_writer.close();
 
             
             ///separate_aggregation
@@ -1952,12 +2293,17 @@ public class account_manager_frame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
+    private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
+    private javax.swing.JMenuItem jMenuItem13;
+    private javax.swing.JMenuItem jMenuItem14;
+    private javax.swing.JMenuItem jMenuItem15;
+    private javax.swing.JMenuItem jMenuItem16;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
@@ -1968,5 +2314,6 @@ public class account_manager_frame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     // End of variables declaration//GEN-END:variables
 }
